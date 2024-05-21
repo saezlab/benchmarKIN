@@ -1,0 +1,67 @@
+---
+title: "cptacBench"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{cptacBench}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+CPTAC benchmark does this and that.
+
+# Getting set up
+```{r setup}
+library(benchmarkeR)
+```
+
+We then take a look at the tutorialData inside PHONEMeS. It consists of a top 
+table results object from limma coming from phosphoproteomics. This contains the 
+information about phosphorylation sites that are differntially abundant between 
+two conditions. 
+
+# Load cptac
+```{r}
+file_paths <- list.files("../kinase_benchmark/data/datasets/CPTAC_phospho/final", full.names = T, pattern = "original")
+cptac_data <- purrr::map(file_paths, readRDS)
+names(cptac_data) <- sub(".*/([^_]+)_.*", "\\1", file_paths) %>% toupper()
+```
+
+# Activity estimation
+You can now use the matrix to infer kinase activities. Make sure to use HGNC symbols for the kinase names as the meta data.
+Here you can use your own method and prior to infer kinase activities. Here we run an example using the z-score as implemented by RoKAI
+and PhosphoSitePlus.
+
+```{r}
+ppsp <- readr::read_tsv("../kinase_benchmark/results/01_processed_data/cptac/mapped_priors/phosphositeplus.tsv")
+```
+Run activity scores
+```{r}
+act_scores <- purrr::map(cptac_data, ~run_zscore_RoKAI(mat = .x, network = ppsp))
+
+head(act_scores)
+```
+# Perturbation benchmark
+```{r}
+performance <- benchmarkROC(score_lists = act_scores, )
+```
+
+Plot results
+```{r}
+bench_df <- performance
+
+auroc_p <- bench_df %>%
+  dplyr::filter(metric == "mcauroc") %>%
+  ggplot2::ggplot(ggplot2::aes(x=method, y=score)) +
+  ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
+  ggplot2::geom_hline(yintercept = 0.5)
+
+auroc_p
+```

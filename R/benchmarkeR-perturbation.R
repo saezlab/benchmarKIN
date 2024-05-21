@@ -8,17 +8,20 @@
 #' experiments as columns.
 #' @export
 #'
-run_perturbBench <- function(act, meta, scale_data = T, rm_experiments = F, n_iter = 1000, ...){
+run_perturbBench <- function(act, meta, scale_data = T, rm_experiments = F, n_iter = 1000, method_id = "method", ...){
   if(scale_data){
     act <- scale_scores(act)
   }
 
-  res <- prepareBench(act = act, meta = meta, rm_experiments = rm_experiments)
+  res <- prepareBench(act = act, meta = meta, rm_experiments = rm_experiments, method_id = method_id)
   act <- res$act
   obs <- res$obs
 
   act_py <- reticulate::r_to_py(act)
   obs_py <- reticulate::r_to_py(obs)
+
+  # Import the decoupler package
+  dc <- reticulate::import("decoupler")
 
   # Call the Python function
   performances <- dc$get_performances(

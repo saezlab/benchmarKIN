@@ -1,4 +1,4 @@
-#' get_perturbData
+#' load_perturbData
 #'
 #' This function returns a matrix of logFC of phosphorylation sites
 #' from perturbation experiments. These can be used to infer kinase
@@ -8,8 +8,11 @@
 #' experiments as columns.
 #' @export
 #'
-get_perturbData <- function(){
-  mat <- base::as.data.frame(hernandezData)
+load_perturbData <- function(){
+  hernandez <- hernandezData
+  hijazi <- hijaziData
+
+  mat <- dplyr::full_join(hernandezData, hijaziData, by = "ID")
 
   rownames(mat) <- mat$ID
   mat <- mat[, -which(names(mat) == "ID")]
@@ -29,7 +32,10 @@ get_perturbData <- function(){
 #' @export
 #'
 load_meta <- function(){
-  meta <- base::as.data.frame(hernandezMeta)
+  hernandez <- base::as.data.frame(hernandezMeta)
+  hijazi <- base::as.data.frame(hijaziMeta)
+
+  meta <- dplyr::bind_rows(hernandez, hijazi)
 
   return(meta)
 }

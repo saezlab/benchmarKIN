@@ -27,9 +27,9 @@
 #' net <- readRDS(file.path(inputs_dir, "net.rds"))
 #'
 #' run_zscore_RoKAI(mat, net, minsize=0)
-run_zscore_RoKAI <- function(mat,
-                             network,
-                             minsize = 5
+run_zscore <- function(mat,
+                       network,
+                       minsize = 5
 ) {
   network_filtered <- network %>%
     dplyr::filter(target %in% rownames(mat)) %>%

@@ -1,0 +1,83 @@
+---
+title: "perturbBench"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{perturbBench}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+KinBench does this and that.
+
+# Getting set up
+```{r setup}
+library(benchmarkeR)
+```
+
+We then take a look at the tutorialData inside PHONEMeS. It consists of a top 
+table results object from limma coming from phosphoproteomics. This contains the 
+information about phosphorylation sites that are differntially abundant between 
+two conditions. 
+
+```{r}
+mat <- load_perturbData()
+head(mat)
+```
+We also have information about the meta data of each experiment
+
+```{r}
+meta <- load_meta()
+head(meta)
+```
+# Activity estimation
+You can now use the matrix to infer kinase activities. Make sure to use HGNC symbols for the kinase names as the meta data.
+Here you can use your own method and prior to infer kinase activities. Here we run an example using the z-score as implemented by RoKAI
+and PhosphoSitePlus.
+
+```{r}
+ppsp <- readr::read_tsv("../kinase_benchmark/results/00_prior/phosphositeplus.tsv")
+ppsp$target <- paste(ppsp$target, ppsp$target_protein, ppsp$position, sep = "|")
+
+ppsp <- ppsp %>%
+  dplyr::select(source, target, mor) %>%
+  dplyr::distinct()
+```
+Run activity scores
+```{r}
+act_scores <- run_zscore(mat = mat, network = ppsp)
+
+head(act_scores)
+```
+# Perturbation benchmark
+```{r}
+performance <- run_perturbBench(act = act_scores, meta = meta, method_id = "zscore_ppsp")
+```
+
+Plot results
+```{r}
+bench_df <- performance
+
+auroc_p <- bench_df %>%
+  dplyr::filter(metric == "mcauroc") %>%
+  ggplot2::ggplot(ggplot2::aes(x=method, y=score)) +
+  ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
+  ggplot2::geom_hline(yintercept = 0.5)
+
+auroc_p
+```
+
+
+# Scaled rank
+```{r}
+rank <- run_rank(act = act_scores, meta = meta)
+median(rank$scaled_rank)
+```
+

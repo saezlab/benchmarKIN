@@ -3,6 +3,7 @@ library(dplyr)
 library(httr)
 library(readxl)
 library(usethis)
+library(stringr)
 
 ## code to prepare `hernandez` dataset ------
 # URL of the Excel file to download
@@ -65,7 +66,15 @@ exp_to_remove <- c("705_225", "1298_272", "1288_272", "1291_272", "387_117", "12
 hernandezMeta <- metaData %>%
   dplyr::filter(!id %in% exp_to_remove)
 
+# Rename phosphorylation sites to match with Hijazi
 hernandezData <- perturbData[colnames(perturbData) %in% c("ID", metaData$id)]
+id_df <- data.frame(id = hernandezData$ID)
+id_df$protein <- stringr::str_extract(id_df$id, "^[^|]+")
+id_df$aa <- stringr::str_extract(id_df$id, "(?<=\\|)[^|]+")
+id_df$new <- paste0(id_df$protein, "_", id_df$aa, "|", id_df$protein, "|", id_df$aa)
+
+hernandezData$ID <- id_df$new
+hernandezData <- as.data.frame(hernandezData)[!duplicated(hernandezData$ID),]
 
 ## Merge and save `perturbData` dataset ------
 usethis::use_data(hernandezData, overwrite = TRUE)
