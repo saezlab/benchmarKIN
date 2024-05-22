@@ -1,13 +1,15 @@
 #' load_perturbData
 #'
-#' This function returns a matrix of logFC of phosphorylation sites
-#' from perturbation experiments. These can be used to infer kinase
-#' activities.
+#' @description
+#' Loads data from the perturbation collection
+#' published by Hernandez-Armenta with the Hijazi datasets.
 #'
-#' @return data.frame with phosphorylation sites as rownames and perturbation
-#' experiments as columns.
+#' @return data frame containing logFC of different
+#' perturbation experiments
 #' @export
-#'
+#' @importFrom dplyr full_join
+#' @examples
+#' load_perturbData()
 load_perturbData <- function(){
   hernandez <- hernandezData
   hijazi <- hijaziData
@@ -20,17 +22,18 @@ load_perturbData <- function(){
   return(mat)
 }
 
-
 #' load_meta
 #'
-#' This function  extract regulatory phosphites from the phonemes network, e.i.
-#' psites that are differentially regulated on proteins that are found in
-#' the phonemes network
-
-#' @return list with two elements: the regulatory psites with predicted mode of
-#' regulations and the kinases that catalyse their phosphorilation
-#' @export
+#' @description
+#' Loads meta data from the perturbation collection
+#' published by Hernandez-Armenta with the Hijazi datasets.
 #'
+#' @return data frame containing additional information
+#' about the perturbation experiments
+#' @export
+#' @importFrom dplyr bind_rows
+#' @examples
+#' load_meta()
 load_meta <- function(){
   hernandez <- base::as.data.frame(hernandezMeta)
   hijazi <- base::as.data.frame(hijaziMeta)

@@ -1,13 +1,17 @@
 #' run_rank
 #'
-#' This function returns a matrix of logFC of phosphorylation sites
-#' from perturbation experiments. These can be used to infer kinase
-#' activities.
+#' @description
+#' Calculates the rank of the perturbed kinases in the respective experiment
 #'
-#' @return data.frame with phosphorylation sites as rownames and perturbation
-#' experiments as columns.
+#' @param act Activity matrix with kinases as rows and experiments as columns.
+#' @param meta Data frame containing sample (experiment) information and perturb (target) in each experiment.
+#'
+#' @return Data frame containing the rank of each perturbed kinase based on its activity.
 #' @export
+#' @import tibble tidyr dplyr stringr
 #'
+#' @examples
+
 run_rank <- function(act, meta){
   ## Get rank ---------------------------
   method_act_long <- act %>%
@@ -44,7 +48,6 @@ run_rank <- function(act, meta){
       act_df <- act_df %>%
         dplyr::arrange(score)
     }
-
 
     if (exp %in% obs$sample){
       targets <- obs %>%

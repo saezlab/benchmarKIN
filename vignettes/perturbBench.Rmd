@@ -22,6 +22,14 @@ KinBench does this and that.
 library(benchmarkeR)
 ```
 
+```{r reticulate}
+library(reticulate)
+
+# Use reticulate to install the Python package
+#use_python("/Users/smuellerdott/miniforge3/envs/benchmarkeR/bin/python", required = TRUE)  # Set the correct path to your Python environment
+#py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE, envname = "~/Users/smuellerdott/miniforge3/envs/benchmarkeR")
+```
+
 We then take a look at the tutorialData inside PHONEMeS. It consists of a top 
 table results object from limma coming from phosphoproteomics. This contains the 
 information about phosphorylation sites that are differntially abundant between 
