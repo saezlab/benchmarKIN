@@ -6,12 +6,27 @@
 \usage{
 scale_scores(mat, scaling = "sd")
 }
+\arguments{
+\item{mat}{Matrix with kinases as rows and experiments as columns.}
+
+\item{scaling}{Scaling based on max or standard deviation.}
+}
 \value{
-data.frame with phosphorylation sites as rownames and perturbation
-experiments as columns.
+Scaled matrix with kinases as rows and experiments as columns.
 }
 \description{
-This function returns a matrix of logFC of phosphorylation sites
-from perturbation experiments. These can be used to infer kinase
-activities.
+Scales inferred kinase activity scores per experiment. Standardizes standard
+deviation or maximum score across experiments.
+}
+\examples{
+# Create random network and matrix
+set.seed(123)
+
+mat <- data.frame(exp1 = runif(5, min = -2, max = 2),
+                  exp2 = runif(5, min = -3, max = 2))
+rownames(mat) <- c("A", "B", "C", "D", "E")
+
+# Scaling
+scale_scores(mat = mat)
+
 }

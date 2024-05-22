@@ -2,16 +2,28 @@
 % Please edit documentation in R/benchmarkeR-multiomics.R
 \name{.getGSvals}
 \alias{.getGSvals}
-\title{run_rank}
+\title{.getGSvals}
 \usage{
 .getGSvals(score_df, GSpos_list, GSneg_list, scale = F)
 }
+\arguments{
+\item{score_df}{A dataframe of scores with kinases as row names and samples/conditions as column names.}
+
+\item{GSpos_list}{A named list of positive gene sets for each kinase.}
+
+\item{GSneg_list}{A named list of negative gene sets for each kinase.}
+
+\item{scale}{A logical indicating whether to scale the scores by z-scores across each row. Default is FALSE.}
+}
 \value{
-data.frame with phosphorylation sites as rownames and perturbation
-experiments as columns.
+A list with the following elements:
+\item{Z-scores}{Dataframe of (optionally scaled) scores.}
+\item{GSpos_values}{List of extracted positive gene set values for each kinase.}
+\item{GSneg_values}{List of extracted negative gene set values for each kinase.}
+\item{number_GSpos_per_kinase}{Numeric vector of counts of positive gene sets per kinase.}
+\item{number_GSneg_per_kinase}{Numeric vector of counts of negative gene sets per kinase.}
 }
 \description{
-This function returns a matrix of logFC of phosphorylation sites
-from perturbation experiments. These can be used to infer kinase
-activities.
+This function processes a dataframe of kinase scores, optionally scales them,
+and extracts values based on specified positive and negative gene sets.
 }

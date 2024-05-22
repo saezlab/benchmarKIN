@@ -29,7 +29,7 @@
 #'
 #' # run benchmark
 #' res <- run_perturbBench(act = mat, meta = meta, method_id = "test")
-
+#'
 run_perturbBench <- function(act, meta, scale_data = T, rm_bg = F, n_iter = 1000, method_id = "method", metric = "auroc", ...){
   if(scale_data){
     act <- scale_scores(act)
@@ -101,7 +101,7 @@ run_perturbBench <- function(act, meta, scale_data = T, rm_bg = F, n_iter = 1000
 #'                    sign = c(1, -1))
 #'
 #' out_list <- prepareBench(act = mat, meta = meta, method_id = "test")
-
+#'
 prepareBench <- function(act, meta, rm_bg = F, method_id = "method"){
   # Rename columns in meta and remove experiments with unknown targets (e.g. several members)
   target_df <- meta %>%
@@ -176,7 +176,7 @@ prepareBench <- function(act, meta, rm_bg = F, method_id = "method"){
 #'
 #' # Scaling
 #' scale_scores(mat = mat)
-
+#'
 scale_scores <- function(mat, scaling = "sd"){
   if (scaling == "max"){
     map_dfc(colnames(mat), function(col_i){
@@ -218,7 +218,7 @@ scale_scores <- function(mat, scaling = "sd"){
 #'
 #' # Remove experiment from background
 #' mat_filtered <- remove_bg(mat = mat, meta = meta)
-
+#'
 remove_bg <- function(mat, meta){
   # mark experiments where no activity was inferred for target
   df_filtered <- purrr::map_dfr(1:nrow(mat), function(i){

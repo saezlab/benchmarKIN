@@ -4,14 +4,34 @@
 \alias{prepareBench}
 \title{prepareBench}
 \usage{
-prepareBench(act, meta, rm_experiments = F, method_id = "method")
+prepareBench(act, meta, rm_bg = F, method_id = "method")
+}
+\arguments{
+\item{act}{Activity matrix with kinases as rows and experiments as columns.}
+
+\item{meta}{Data frame containing sample (experiment) information and perturb (target) in each experiment.}
+
+\item{rm_bg}{Whether to remove experiments where no activity was inferred for the target kinase from the background set.}
+
+\item{method_id}{ID for the method currently being tested.}
 }
 \value{
-data.frame with phosphorylation sites as rownames and perturbation
-experiments as columns.
+list of processed activity scores and meta data which can be used as direct input to the decoupler benchmark function
 }
 \description{
-This function returns a matrix of logFC of phosphorylation sites
-from perturbation experiments. These can be used to infer kinase
-activities.
+Prepares the input for the decoupler benchmark function.
+}
+\examples{
+set.seed(123)
+
+mat <- data.frame(exp1 = runif(5, min = -2, max = 2),
+                  exp2 = runif(5, min = -3, max = 2))
+rownames(mat) <- c("A", "B", "C", "D", "E")
+
+meta <- data.frame(id = c("exp1", "exp2"),
+                   target = c("A", "C"),
+                   sign = c(1, -1))
+
+out_list <- prepareBench(act = mat, meta = meta, method_id = "test")
+
 }

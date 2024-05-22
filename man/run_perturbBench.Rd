@@ -8,19 +8,47 @@ run_perturbBench(
   act,
   meta,
   scale_data = T,
-  rm_experiments = F,
+  rm_bg = F,
   n_iter = 1000,
   method_id = "method",
   metric = "auroc",
   ...
 )
 }
+\arguments{
+\item{act}{Activity matrix with kinases as rows and experiments as columns.}
+
+\item{meta}{Data frame containing sample (experiment) information and perturb (target) in each experiment.}
+
+\item{scale_data}{Whether scores should be scaled per experiment.}
+
+\item{rm_bg}{Whether to remove experiments where no activity was inferred for the target kinase from the background set.}
+
+\item{n_iter}{Number of iterations for the subsampling}
+
+\item{method_id}{ID for the method currently being tested.}
+
+\item{metric}{Performance metric to be returned (either auroc or auprc)}
+}
 \value{
-data.frame with phosphorylation sites as rownames and perturbation
-experiments as columns.
+Data frame containing the performance metric for the inferred kinase activities.
 }
 \description{
-This function returns a matrix of logFC of phosphorylation sites
-from perturbation experiments. These can be used to infer kinase
-activities.
+Runs perturbation benchmark (based on decoupler).
+}
+\examples{
+# Create random meta and matrix
+set.seed(123)
+
+mat <- data.frame(exp1 = runif(5, min = -2, max = 2),
+                  exp2 = runif(5, min = -3, max = 2))
+rownames(mat) <- c("A", "B", "C", "D", "E")
+
+meta <- data.frame(id = c("exp1", "exp2"),
+                   target = c("E", "A"),
+                   sign = c(1, -1))
+
+# run benchmark
+res <- run_perturbBench(act = mat, meta = meta, method_id = "test")
+
 }

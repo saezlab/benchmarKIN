@@ -1,11 +1,21 @@
-#' run_rank
+#' benchmarkROC
 #'
-#' This function returns a matrix of logFC of phosphorylation sites
-#' from perturbation experiments. These can be used to infer kinase
-#' activities.
+#' @description
+#' Evaluates inferred kinase activities from the cptac data. Gold standard sets have
+#' been defined based on the proteomics data of cptac.
 #'
-#' @return data.frame with phosphorylation sites as rownames and perturbation
-#' experiments as columns.
+#' @param score_lists A list of lists containing kinase scores for each method for each of cancer types.
+#' @param GS_list A list of data frames containing gold standard (GS) positive and negative pairs of kinase for each cancer type.
+#' @param cts A character vector specifying the cancer types or experimental conditions to be considered. Default is "all", indicating all cancer types in score_lists.
+#' @param min_num An integer specifying the minimum number of measurements required for each kinase. Default is 30.
+#' @param kins A list of potential kinases to consider, which should match the kinase names in the GS lists. Default is "all", indicating all kinases present in the GS lists.
+#' @param sub_samp_frac A numeric value specifying the fraction of samples to be used for benchmarking. Default is 0.8.
+#' @param ROC_obj A logical value indicating whether to return ROC objects along with AUROC values. Default is FALSE.
+#' @param metric A character value specifying the evaluation metric.
+#' @param ... Additional arguments to be passed to the internal functions, such as the `.ROC_sampler` function.
+#'
+#' @return Data frame containing the performance metric for the inferred kinase activities.
+#'
 #' @export
 #'
 benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all", sub_samp_frac=0.8, ROC_obj=F, metric = "auroc", ...){
@@ -90,14 +100,24 @@ benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all"
   return(op)
 }
 
-#' run_rank
+#' .getGSvals
 #'
-#' This function returns a matrix of logFC of phosphorylation sites
-#' from perturbation experiments. These can be used to infer kinase
-#' activities.
+#' @description
+#' This function processes a dataframe of kinase scores, optionally scales them,
+#' and extracts values based on specified positive and negative gene sets.
 #'
-#' @return data.frame with phosphorylation sites as rownames and perturbation
-#' experiments as columns.
+#' @param score_df A dataframe of scores with kinases as row names and samples/conditions as column names.
+#' @param GSpos_list A named list of positive gene sets for each kinase.
+#' @param GSneg_list A named list of negative gene sets for each kinase.
+#' @param scale A logical indicating whether to scale the scores by z-scores across each row. Default is FALSE.
+#'
+#' @return A list with the following elements:
+#'   \item{Z-scores}{Dataframe of (optionally scaled) scores.}
+#'   \item{GSpos_values}{List of extracted positive gene set values for each kinase.}
+#'   \item{GSneg_values}{List of extracted negative gene set values for each kinase.}
+#'   \item{number_GSpos_per_kinase}{Numeric vector of counts of positive gene sets per kinase.}
+#'   \item{number_GSneg_per_kinase}{Numeric vector of counts of negative gene sets per kinase.}
+#'
 #' @export
 #'
 .getGSvals <- function(score_df, GSpos_list, GSneg_list, scale=F){
@@ -135,17 +155,27 @@ benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all"
   return(out_list)
 }
 
-#' run_rank
+#' .ROC_sampler
 #'
-#' This function returns a matrix of logFC of phosphorylation sites
-#' from perturbation experiments. These can be used to infer kinase
-#' activities.
+#' Computes AUROC (Area Under the Receiver Operating Characteristic curve) for given positive and negative gene sets.
 #'
-#' @return data.frame with phosphorylation sites as rownames and perturbation
-#' experiments as columns.
+#' @param GSpos A vector of positive gene sets.
+#' @param GSneg A vector of negative gene sets.
+#' @param Npert An integer specifying the number of permutations/samples to generate. Default is 1000.
+#' @param set_size Either a single value or a vector of two values specifying the sizes of the sampled positive and negative sets. Default is "GSpos_size". If "all", uses all elements in GSpos and GSneg.
+#' @param ROC_obj A logical value indicating whether to return ROC objects along with AUROC values. Default is FALSE.
+#' @param seed An integer used to set the random seed for reproducibility. Default is 1.
+#' @param ... Additional arguments passed to `pROC::roc` function.
+#'
+#' @return A list containing:
+#' \item{sample_AUROCs}{A numeric vector of AUROC values for each sample.}
+#' \item{sample_ROC_objects}{(Optional) A list of ROC objects for each sample. Returned if `ROC_obj` is TRUE.}
+#' \item{GS_pos_samples}{A list of sampled positive gene sets.}
+#' \item{GS_neg_samples}{A list of sampled negative gene sets.}
+#'
 #' @export
 #'
-.ROC_sampler <- function(GSpos, GSneg, Npert=1000, set_size="GSpos_size", ROC_obj=F, seed=1, ...){
+.ROC_sampler <- function(GSpos, GSneg, Npert=1000, set_size= "GSpos_size", ROC_obj=F, seed=1, ...){
   set.seed(seed)
   GS_pos_samples <- list()
   GS_neg_samples <- list()

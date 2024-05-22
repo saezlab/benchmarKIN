@@ -2,7 +2,7 @@
 % Please edit documentation in R/benchmarkeR-multiomics.R
 \name{benchmarkROC}
 \alias{benchmarkROC}
-\title{run_rank}
+\title{benchmarkROC}
 \usage{
 benchmarkROC(
   score_lists,
@@ -16,12 +16,29 @@ benchmarkROC(
   ...
 )
 }
+\arguments{
+\item{score_lists}{A list of lists containing kinase scores for each method for each of cancer types.}
+
+\item{GS_list}{A list of data frames containing gold standard (GS) positive and negative pairs of kinase for each cancer type.}
+
+\item{cts}{A character vector specifying the cancer types or experimental conditions to be considered. Default is "all", indicating all cancer types in score_lists.}
+
+\item{min_num}{An integer specifying the minimum number of measurements required for each kinase. Default is 30.}
+
+\item{kins}{A list of potential kinases to consider, which should match the kinase names in the GS lists. Default is "all", indicating all kinases present in the GS lists.}
+
+\item{sub_samp_frac}{A numeric value specifying the fraction of samples to be used for benchmarking. Default is 0.8.}
+
+\item{ROC_obj}{A logical value indicating whether to return ROC objects along with AUROC values. Default is FALSE.}
+
+\item{metric}{A character value specifying the evaluation metric.}
+
+\item{...}{Additional arguments to be passed to the internal functions, such as the \code{.ROC_sampler} function.}
+}
 \value{
-data.frame with phosphorylation sites as rownames and perturbation
-experiments as columns.
+Data frame containing the performance metric for the inferred kinase activities.
 }
 \description{
-This function returns a matrix of logFC of phosphorylation sites
-from perturbation experiments. These can be used to infer kinase
-activities.
+Evaluates inferred kinase activities from the cptac data. Gold standard sets have
+been defined based on the proteomics data of cptac.
 }
