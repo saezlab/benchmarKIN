@@ -63,11 +63,8 @@ performance <- run_perturbBench(act = act_scores, meta = meta, method_id = "zsco
 
 Plot results
 ```{r}
-bench_df <- performance
-
-auroc_p <- bench_df %>%
-  dplyr::filter(metric == "mcauroc") %>%
-  ggplot2::ggplot(ggplot2::aes(x=method, y=score)) +
+auroc_p <- performance %>%
+  ggplot2::ggplot(ggplot2::aes(x=method, y=auroc)) +
   ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
   ggplot2::geom_hline(yintercept = 0.5)
 

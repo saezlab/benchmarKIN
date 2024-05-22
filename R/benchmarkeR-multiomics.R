@@ -8,7 +8,7 @@
 #' experiments as columns.
 #' @export
 #'
-benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all", sub_samp_frac=0.8, ROC_obj=F, ...){
+benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all", sub_samp_frac=0.8, ROC_obj=F, metric = "auroc", ...){
   #filter to cancer types of (cts) interest if specified; otherwise use all cts in score_lists
   if(length(cts)==1){
     if(cts=="all"){
@@ -78,6 +78,15 @@ benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all"
   all_roc_tab <- cbind(all_roc, all_roc_sd)
   op <- list(kins, GSvals, all_score_list_pos, all_score_list_neg, all_roc_list, all_roc_tab)
   names(op) <- c("evaluation_kinases", "list_of_standard_set_values", "all_positive_pair_values", "all_negative_pair_values", "ROC_results", "ROC_summary_table")
+
+  if (metric == "auroc"){
+    op <- purrr::map_dfr(names(op$ROC_results), function(method_id){
+      data.frame(method = method_id,
+                 auroc = op$ROC_results[[method_id]]$sample_AUROCs)
+
+    })
+  }
+
   return(op)
 }
 
@@ -126,6 +135,16 @@ benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all"
   return(out_list)
 }
 
+#' run_rank
+#'
+#' This function returns a matrix of logFC of phosphorylation sites
+#' from perturbation experiments. These can be used to infer kinase
+#' activities.
+#'
+#' @return data.frame with phosphorylation sites as rownames and perturbation
+#' experiments as columns.
+#' @export
+#'
 .ROC_sampler <- function(GSpos, GSneg, Npert=1000, set_size="GSpos_size", ROC_obj=F, seed=1, ...){
   set.seed(seed)
   GS_pos_samples <- list()
@@ -135,21 +154,21 @@ benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all"
   if(length(set_size) == 1) { if(set_size=="all"){
     GS_pos_samples <- GSpos
     GS_neg_samples <- GSneg
-    sample_ROC <- roc(controls=GS_neg_samples, cases=GS_pos_samples, ...)
+    sample_ROC <- pROC::roc(controls=GS_neg_samples, cases=GS_pos_samples, ...)
     auroc <- as.numeric(sample_ROC$auc)
   } else {
     if((length(set_size) == 1) & (set_size=="GSpos_size")){
       GS_pos_samples <- GSpos
       for(i in 1:Npert){
         GS_neg_samples[[i]] <- sample(GSneg, length(GSpos), replace = F)
-        sample_ROC[[i]] <- roc(controls=GS_neg_samples[[i]], cases=GS_pos_samples, ...)
+        sample_ROC[[i]] <- pROC::roc(controls=GS_neg_samples[[i]], cases=GS_pos_samples, ...)
         auroc[i] <- as.numeric(sample_ROC[[i]]$auc)
       }
     }}} else {
       for(i in 1:Npert){
         GS_pos_samples[[i]] <- sample(GSpos, set_size[1], replace = F)
         GS_neg_samples[[i]] <- sample(GSneg, set_size[2], replace = F)
-        sample_ROC[[i]] <- roc(controls=GS_neg_samples[[i]], cases=GS_pos_samples[[i]], ...)
+        sample_ROC[[i]] <- pROC::roc(controls=GS_neg_samples[[i]], cases=GS_pos_samples[[i]], ...)
         auroc[[i]] <- as.numeric(sample_ROC[[i]]$auc)
       }
 

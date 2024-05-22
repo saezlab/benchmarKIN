@@ -1,32 +1,35 @@
-#' RoKAI_zscore
+#' run_zscore
 #'
 #' @description
-#' Calculates Z-score for kinase activity  described in RoKAI.
+#' Calculates kinase activities from phosphoproteomics data
+#' using the Z-score as implemented in RoKAI.
 #'
 #' @details
-#' RoKAI_zscore infers regulator activities
+#' RoKAI zscore algorithm re-implementation in R
 #'
+#' @param mat Matrix with phosphorylation sites as rows and experiments as columns.
+#' @param network Data frame containing kinase-substrate interactions.
 #' @param minsize Integer indicating the minimum number of targets per source.
 #'
-#' @return A long format tibble of the enrichment scores for each source
-#'  across the samples. Resulting tibble contains the following columns:
-#'  1. `source`: Source nodes of `network`.
-#'  2. `condition`: Condition representing each column of `mat`.
-#'  3. `score`: Regulatory activity (enrichment score).
-#' @family decoupleR statistics
+#' @return A long format tibble of the activity scores for each source (kinase)
+#'  across the samples.
 #' @export
-#' @import dplyr
-#' @import purrr
-#' @import tibble
-#' @import tidyr
+#' @import dplyr purrr tibble tidyr
 #' @importFrom stats sd
 #' @examples
-#' inputs_dir <- system.file("testdata", "inputs", package = "decoupleR")
+#' # Create random network and matrix
+#' set.seed(123)
+#' net <- data.frame(source = rep(c("A", "B", "C"), each = 5),
+#'                   target = sample(rep(c("A", "B", "C", "D", "E"), each = 3)),
+#'                   mor = 1) %>%
+#'            dplyr::distinct()
 #'
-#' mat <- readRDS(file.path(inputs_dir, "mat.rds"))
-#' net <- readRDS(file.path(inputs_dir, "net.rds"))
+#' mat <- data.frame(exp1 = runif(5, min = -2, max = 2))
+#' rownames(mat) <- c("A", "B", "C", "D", "E")
 #'
-#' run_zscore_RoKAI(mat, net, minsize=0)
+#' # Activity estimation
+#' run_zscore(mat = mat, network = net, minsize = 2)
+
 run_zscore <- function(mat,
                        network,
                        minsize = 5

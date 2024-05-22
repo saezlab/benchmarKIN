@@ -44,22 +44,23 @@ ppsp <- readr::read_tsv("../kinase_benchmark/results/01_processed_data/cptac/map
 ```
 Run activity scores
 ```{r}
-act_scores <- purrr::map(cptac_data, ~run_zscore_RoKAI(mat = .x, network = ppsp))
+act_scores <- purrr::map(cptac_data, ~list(zscore_ppsp = run_zscore(mat = .x, network = ppsp)))
 
 head(act_scores)
 ```
 # Perturbation benchmark
 ```{r}
-performance <- benchmarkROC(score_lists = act_scores, )
+combinedGS_list <- readRDS("../kinase_benchmark/data/misc/benchmarking_gold_standard_top5per.Rds")
+```
+
+```{r}
+performance <- benchmarkROC(score_lists = act_scores, GS_list = combinedGS_list)
 ```
 
 Plot results
 ```{r}
-bench_df <- performance
-
-auroc_p <- bench_df %>%
-  dplyr::filter(metric == "mcauroc") %>%
-  ggplot2::ggplot(ggplot2::aes(x=method, y=score)) +
+auroc_p <- performance %>%
+  ggplot2::ggplot(ggplot2::aes(x=method, y=auroc)) +
   ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
   ggplot2::geom_hline(yintercept = 0.5)
 

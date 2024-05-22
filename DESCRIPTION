@@ -1,21 +1,47 @@
 Package: benchmarkeR
-Title: What the Package Does (One Line, Title Case)
+Title: Benchmark of kinase activity inference methods
 Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+Authors@R: c(
+    person(
+        given = "Sophia", 
+        family = "Müller-Dott",
+        role = c("aut", "cre"),
+        email = "sophia.mueller-dott@uni-heidelberg.de",
+        comment = c(ORCID = "0000-0002-9710-1865")
+    ),
+    person(
+        given = "Eric J.", 
+        family = "Jaehnig",
+        role = c("aut"),
+        email = "eric.Jaehnig@bcm.edu",
+        comment = c(ORCID = "0000-0001-9618-6011")
+    )
+)
+Description: benchmarkeR provides two benchmarking approaches for kinase activity inference (perturbation-based and cptac-based) 
+License: GPL-3 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Config/testthat/edition: 3
+Depends: 
+    R (>= 3.10),
+    python
+Imports: 
+    dplyr,
+    tidyr,
+    tibble,
+    purrr,
+    stats,
+    reticulate,
+    stringr,
+    pROC,
+    readr,
+    ggplot2
 Suggests: 
+    tidyverse,
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
-Config/testthat/edition: 3
-Depends: 
-    R (>= 2.10)
 LazyData: true
+Remotes: saezlab/decoupler-py
 VignetteBuilder: knitr

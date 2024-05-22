@@ -8,7 +8,7 @@
 #' experiments as columns.
 #' @export
 #'
-run_perturbBench <- function(act, meta, scale_data = T, rm_experiments = F, n_iter = 1000, method_id = "method", ...){
+run_perturbBench <- function(act, meta, scale_data = T, rm_experiments = F, n_iter = 1000, method_id = "method", metric = "auroc", ...){
   if(scale_data){
     act <- scale_scores(act)
   }
@@ -35,7 +35,20 @@ run_perturbBench <- function(act, meta, scale_data = T, rm_experiments = F, n_it
   )
 
   # Convert the result back to R if needed
-  performances_r <- reticulate::py_to_r(performances)
+  performances_r <- reticulate::py_to_r(performances) %>%
+    dplyr::select(method, metric, score)
+
+  if (metric == "auroc"){
+    performances_r <- performances_r %>%
+      dplyr::filter(metric == "mcauroc") %>%
+      dplyr::select(method, score) %>%
+      dplyr::rename("auroc" = score)
+  } else if (metric == "auprc"){
+    performances_r <- performances_r %>%
+      dplyr::filter(metric == "mcauprc") %>%
+      dplyr::select(method, score) %>%
+      dplyr::rename("auprc" = score)
+  }
 
   return(performances_r)
 }
@@ -139,7 +152,7 @@ scale_scores <- function(mat, scaling = "sd"){
       mat[col_i]/max(abs(mat[,col_i]), na.rm = T)
     })
   } else if (scaling == "sd") {
-    scale(mat, center = FALSE, scale = TRUE)[,]
+    base::scale(mat, center = FALSE, scale = TRUE)[,]
   } else {
     mat
   }
