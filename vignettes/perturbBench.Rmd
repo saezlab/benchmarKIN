@@ -26,8 +26,8 @@ library(benchmarkeR)
 library(reticulate)
 
 # Use reticulate to install the Python package
-#use_python("/Users/smuellerdott/miniforge3/envs/benchmarkeR/bin/python", required = TRUE)  # Set the correct path to your Python environment
-#py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE, envname = "~/Users/smuellerdott/miniforge3/envs/benchmarkeR")
+use_python("/Users/smuellerdott/miniforge3/envs/benchmarkeR/bin/python", required = TRUE)  # Set the correct path to your Python environment
+py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE, envname = "~/Users/smuellerdott/miniforge3/envs/benchmarkeR")
 ```
 
 We then take a look at the tutorialData inside PHONEMeS. It consists of a top 
@@ -51,10 +51,13 @@ Here you can use your own method and prior to infer kinase activities. Here we r
 and PhosphoSitePlus.
 
 ```{r}
-ppsp <- readr::read_tsv("../kinase_benchmark/results/00_prior/phosphositeplus.tsv")
-ppsp$target <- paste(ppsp$target, ppsp$target_protein, ppsp$position, sep = "|")
+head(phosphositeplus)
+```
 
-ppsp <- ppsp %>%
+```{r}
+phosphositeplus$target <- paste(phosphositeplus$target, phosphositeplus$target_protein, phosphositeplus$position, sep = "|")
+
+ppsp <- phosphositeplus %>%
   dplyr::select(source, target, mor) %>%
   dplyr::distinct()
 ```
