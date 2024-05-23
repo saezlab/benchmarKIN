@@ -79,7 +79,9 @@ benchmarkROC <- function(score_lists, GS_list, cts="all", min_num=30, kins="all"
   all_roc <- numeric()
   all_roc_sd <- numeric()
   for(i in 1:length(all_score_list_pos)){
-    all_roc_list[[names(all_score_list_pos)[i]]] <- .ROC_sampler(all_score_list_pos[[i]], all_score_list_neg[[i]], set_size = samps[[i]], ...)
+    suppressMessages({
+      all_roc_list[[names(all_score_list_pos)[i]]] <- .ROC_sampler(all_score_list_pos[[i]], all_score_list_neg[[i]], set_size = samps[[i]], ...)
+    })
     all_roc[i] <- mean(all_roc_list[[names(all_score_list_pos)[i]]]$sample_AUROCs)
     names(all_roc)[i] <- names(all_score_list_pos)[i]
     all_roc_sd[i] <- sd(all_roc_list[[names(all_score_list_pos)[i]]]$sample_AUROCs)
