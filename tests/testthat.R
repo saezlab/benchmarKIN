@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(kinbench)
+library(benchmarkeR)
 
-test_check("kinbench")
+test_check("benchmarkeR")

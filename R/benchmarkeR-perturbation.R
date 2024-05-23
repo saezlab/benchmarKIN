@@ -204,7 +204,7 @@ scale_scores <- function(mat, scaling = "sd"){
 #' @return Matrix after filtering out experiments where no activity for the target was inferred.
 #' @export
 #' @examples
-#'  Create random network and matrix
+#'  # Create random network and matrix
 #'  set.seed(123)
 #'
 #'  mat <- data.frame(experiment = c("exp1", "exp2"),
