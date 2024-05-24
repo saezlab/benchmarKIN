@@ -30,8 +30,8 @@ Imports:
     stringr,
     pROC,
     readr,
-    Matrix (== 1.6-0),
-    MASS (== 7.3-60)
+    Matrix (<= 1.6-0),
+    MASS (<= 7.3-60)
 Suggests: 
     tidyverse,
     knitr,

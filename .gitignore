@@ -41,3 +41,5 @@ docs/
 inst/doc
 .Rproj.user
 *.Rproj
+/doc/
+/Meta/
