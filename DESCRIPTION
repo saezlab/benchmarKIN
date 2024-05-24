@@ -30,10 +30,7 @@ Imports:
     reticulate,
     stringr,
     pROC,
-    readr,
-    ggplot2,
-    mass (== 7.3_60),
-    matrix (== 1.6_5)
+    readr
 Suggests: 
     tidyverse,
     knitr,
