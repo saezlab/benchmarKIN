@@ -16,7 +16,12 @@ To run the benchmarking approaches yourself please follow these tutorials:
 ## Installation
 To install `benchmarkeR` please run:
 ```
-devtools::install_github('saezlab/benchmarkeR')
+# Install specific versions of dependencies (currently has to be done separate)
+remotes::install_version("Matrix", version="1.6-5", repos="http://cran.us.r-project.org")
+remotes::install_version("MASS", version="7.3-60", repos="http://cran.us.r-project.org")
+
+# Install the package from GitHub
+remotes::install_github("saezlab/benchmarkeR")
 ```
 
 ## Citation
