@@ -30,7 +30,7 @@
 #' # run benchmark
 #' res <- run_perturbBench(act = mat, meta = meta, method_id = "test")
 #'
-run_perturbBench <- function(act, meta, scale_data = T, rm_bg = F, n_iter = 1000, method_id = "method", metric = "auroc", ...){
+run_perturbBench <- function(act, meta, scale_data = T, rm_bg = F, n_iter = 1000, method_id = "method", metric = "auroc"){
   if(scale_data){
     act <- scale_scores(act)
   }

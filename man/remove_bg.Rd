@@ -19,7 +19,7 @@ Identifies experiments where no activity could be inferred for any of the
 target kinases and removes the experiment.
 }
 \examples{
- Create random network and matrix
+ # Create random network and matrix
  set.seed(123)
 
  mat <- data.frame(experiment = c("exp1", "exp2"),

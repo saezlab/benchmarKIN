@@ -11,8 +11,7 @@ run_perturbBench(
   rm_bg = F,
   n_iter = 1000,
   method_id = "method",
-  metric = "auroc",
-  ...
+  metric = "auroc"
 )
 }
 \arguments{

@@ -21,8 +21,8 @@
 #' set.seed(123)
 #' net <- data.frame(source = rep(c("A", "B", "C"), each = 5),
 #'                   target = sample(rep(c("A", "B", "C", "D", "E"), each = 3)),
-#'                   mor = 1) %>%
-#'            dplyr::distinct()
+#'                   mor = 1)
+#' net <- dplyr::distinct(net)
 #'
 #' mat <- data.frame(exp1 = runif(5, min = -2, max = 2))
 #' rownames(mat) <- c("A", "B", "C", "D", "E")
