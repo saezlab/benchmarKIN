@@ -13,5 +13,11 @@ To run the benchmarking approaches yourself please follow these tutorials:
 - [Perturbation based benchmark](https://github.com/saezlab/benchmarkeR/blob/main/vignettes/perturbBench.Rmd)
 - [CPTAC based benchmark](https://github.com/saezlab/benchmarkeR/blob/main/vignettes/cptacBench.Rmd)
 
+## Installation
+To install `benchmarkeR` please run:
+```
+devtools::install_github('saezlab/benchmarkeR')
+```
+
 ## Citation
 > Preprint out soon
