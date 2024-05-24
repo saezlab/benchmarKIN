@@ -22,7 +22,7 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 3.10)
 Imports: 
-    Matrix (== 1.6-0),
+    Matrix (== 1.5-4),
     MASS (== 7.3-60),
     dplyr,
     tidyr,
