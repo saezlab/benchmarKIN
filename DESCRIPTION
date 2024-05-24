@@ -22,14 +22,13 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 3.10)
 Imports: 
-    Matrix (== 1.6-0),
-    MASS (== 7.3-60),
-    tzdb (== 0.4.0),
+    Matrix,
+    MASS,
     dplyr,
     tidyr,
     tibble,
     purrr,
-    reticulate,
+    reticulate (>= 1.37.0),
     stringr,
     pROC,
     readr
