@@ -30,7 +30,7 @@ Imports:
     stringr (== 1.5.1),
     pROC (== 1.18.5),
     readr (== 2.1.5),
-    matrix (== 1.6_5)
+    matrix (== 1.6.5)
 Suggests: 
     tidyverse,
     knitr,
