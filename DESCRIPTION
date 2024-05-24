@@ -22,20 +22,20 @@ Config/testthat/edition: 3
 Depends: 
     R (>= 3.10)
 Imports:
-    base
-    biocmanager
-    devtools
-    roxygen2
-    usethis
-    testthat
-    readxl
-    tidyverse
-    proc
-    ggplot2
-    reticulate
+    base,
+    biocmanager,
+    devtools,
+    roxygen2,
+    usethis,
+    testthat,
+    readxl,
+    tidyverse,
+    proc,
+    ggplot2,
+    reticulate,
 SystemRequirements: 
-    Python
-    pandas
+    Python,
+    pandas,
     numpy
 Suggests: 
     tidyverse,
