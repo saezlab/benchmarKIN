@@ -24,6 +24,7 @@ Depends:
 Imports: 
     Matrix (== 1.6-0),
     MASS (== 7.3-60),
+    tzdb (== 0.4.0),
     dplyr,
     tidyr,
     tibble,
