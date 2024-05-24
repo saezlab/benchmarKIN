@@ -24,16 +24,10 @@ Depends:
 Imports: 
     Matrix,
     MASS,
-    dplyr,
-    tidyr,
-    tibble,
-    purrr,
-    reticulate,
-    stringr,
-    pROC,
-    readr
-Suggests: 
     tidyverse,
+    reticulate,
+    pROC
+Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0)
