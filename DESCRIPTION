@@ -27,11 +27,13 @@ Imports:
     tibble,
     purrr,
     stats,
-    reticulate (== 1.37.0),
+    reticulate,
     stringr,
     pROC,
     readr,
-    ggplot2 (== 3.5.1)
+    ggplot2,
+    mass (== 7.3_60),
+    matrix (== 1.6_5)
 Suggests: 
     tidyverse,
     knitr,
