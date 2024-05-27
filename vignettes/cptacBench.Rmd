@@ -1,8 +1,8 @@
 ---
-title: "cptacBench"
+title: "cptac-based Benchmark"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{cptacBench}
+  %\VignetteIndexEntry{perturbBench}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,52 +15,105 @@ knitr::opts_chunk$set(
 ```
 
 # Introduction
-CPTAC benchmark does this and that.
+This benchmark is based on the cptac dataset which contains genomics, proteomics
+and phosphoproteomics information of multiple patients from different cancer types. 
+Here, the proteomics data was used to identify a gold standard set of deregulated 
+kinases per patient which are expected to have an increased or decreased activity.
+
+The phosphoproteomic data is then used to infer kinase activities and to evaluate
+which method and kinase-substrate library is able to recapitulate the gold standard
+set of kinases.
+
+For this, we provide the normalized abundance of phosphorylation sites for each
+patient across different cancer types.
 
 # Getting set up
+We first load the required packages to run the benchmark.
+
 ```{r setup}
 library(benchmarkeR)
+library(dplyr)
 ```
 
-We then take a look at the tutorialData inside PHONEMeS. It consists of a top 
-table results object from limma coming from phosphoproteomics. This contains the 
-information about phosphorylation sites that are differntially abundant between 
-two conditions. 
+# CPTAC data
+We then take a look at the phosphoproteomics data from CPTAC. This data is 
+stored as a long data frame in cptacData. For our analysis we will transform
+it to a list of wide data frames for each cancer type which can be used for
+activity inference.
 
-# Load cptac
-```{r}
-file_paths <- list.files("../kinase_benchmark/data/datasets/CPTAC_phospho/final", full.names = T, pattern = "original")
-cptac_data <- purrr::map(file_paths, readRDS)
-names(cptac_data) <- sub(".*/([^_]+)_.*", "\\1", file_paths) %>% toupper()
+```{r data}
+cptac_list <- purrr::map(unique(cptacData$cancer), function(cancer_type){
+  cptacData %>%
+    dplyr::filter(cancer == cancer_type) %>%
+    tidyr::pivot_wider(names_from = "sample", values_from = "statistic", values_fill = NA) %>%
+    dplyr::select(-cancer) %>%
+    tibble::column_to_rownames("id")
+})
+
+names(cptac_list) <- unique(cptacData$cancer)
 ```
 
 # Activity estimation
-You can now use the matrix to infer kinase activities. Make sure to use HGNC symbols for the kinase names as the meta data.
-Here you can use your own method and prior to infer kinase activities. Here we run an example using the z-score as implemented by RoKAI
-and PhosphoSitePlus.
+Here, we will test the z-score (as implemented by RoKAI) in combination with the
+PhosphoSitePlus kinase-substrate library as in example.
 
-```{r}
-ppsp <- readr::read_tsv("../kinase_benchmark/results/01_processed_data/cptac/mapped_priors/phosphositeplus.tsv")
+In theory any other method can also be tested with that data.
+
+## Kinase-substrate library
+For that we have already processed a version of PhosphoSitePlus (accessed: 19/04/2023)
+that can be mapped to our phosphorylation site ids.
+
+```{r phosphositeplus}
+head(phosphositeplus)
 ```
-Run activity scores
-```{r}
-act_scores <- purrr::map(cptac_data, ~list(zscore_ppsp = run_zscore(mat = .x, network = ppsp)))
-```
-# Perturbation benchmark
-```{r}
-combinedGS_list <- readRDS("../kinase_benchmark/data/misc/benchmarking_gold_standard_top5per.Rds")
+After mapping the phosphorylation sites we can bring it into the right format to
+run the run_zscore function.
+
+```{r map_ppsp}
+pps_id <- cptacData$id %>% 
+  unique()
+map_pps <- data.frame(pps_id = pps_id) %>%
+  dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 1)) %>%
+  dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(ENSEMBL, "\\."), 1))  %>%
+  dplyr::mutate(sequence = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 4))
+mapped_phosphositeplus <- phosphositeplus %>%
+  dplyr::left_join(map_pps, by = c("ENSEMBL", "sequence"), relationship = "many-to-many") %>%
+  dplyr::mutate(target = pps_id) %>%
+  dplyr::filter(!is.na(pps_id)) %>%
+  dplyr::select(source, target, mor) %>%
+  dplyr::distinct()
 ```
 
-```{r}
-performance <- benchmarkROC(score_lists = act_scores, GS_list = combinedGS_list)
+## Activity inference using the z-score 
+The z-score calculates a score for each kinase by aggregating the change in
+abundance of the direct targets in relation to changes in the non-targets.
+
+```{r activity}
+act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_phosphositeplus)))
 ```
 
-Plot results
-```{r}
+# CPTAC benchmark
+## Gold standard set of kinases
+The gold standard set contains kinases per patient which are expected to have 
+a high or a low activity. Here we can look at the kinases which are supposed to
+have a high activity for patients which BRCA.
+```{r cptacGS}
+str(cptacGS$BRCA$GS_pos_pairs)
+```
+
+## Area under the receiver operator curve
+The inferred kinase activities can then be evaluated using the benchmarkROC()
+function. Hereby, it is important to note that the kinase symbol needs to match
+with the gold standard set (here gene symbols).
+```{r benchmarl}
+performance <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS)
+```
+
+We can then plot the areas under the receiver operator curve (AUROCs) and can 
+compare this with other methods or prior knowledge resources.
+```{r plot}
 auroc_p <- performance %>%
   ggplot2::ggplot(ggplot2::aes(x=method, y=auroc)) +
   ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
   ggplot2::geom_hline(yintercept = 0.5)
-
 auroc_p
-```
