@@ -57,7 +57,7 @@ Hijazi et al.
 
 ```{r data}
 mat <- load_perturbData()
-head(mat)
+mat[1:5, 20:23]
 ```
 Additional information about each experiment can be found in the meta data. This
 contains information about the targeted kinase(s), the PMID, etc.
@@ -99,7 +99,7 @@ abundance of the direct targets in relation to changes in the non-targets.
 ```{r activity}
 act_scores <- run_zscore(mat = mat, network = ppsp)
 
-head(act_scores)
+act_scores[1:5, 1:5]
 ```
 # Perturbation benchmark
 ## Area under the receiver operator curve
