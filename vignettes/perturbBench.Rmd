@@ -29,7 +29,7 @@ the peturbed kinases based on their inferred activities.
 # Getting set up
 We first load the required packages to run the benchmark.
 ```{r setup}
-library(benchmarkeR)
+library(benchmarKIN)
 library(dplyr)
 ```
 

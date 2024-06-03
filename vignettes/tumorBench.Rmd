@@ -1,8 +1,8 @@
 ---
-title: "cptac-based Benchmark"
+title: "Tumor-based Benchmark"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{perturbBench}
+  %\VignetteIndexEntry{tumorBench}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -31,7 +31,7 @@ patient across different cancer types.
 We first load the required packages to run the benchmark.
 
 ```{r setup}
-library(benchmarkeR)
+library(benchmarKIN)
 library(dplyr)
 ```
 

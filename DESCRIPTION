@@ -1,4 +1,4 @@
-Package: benchmarkeR
+Package: benchmarKIN
 Title: Benchmark of kinase activity inference methods
 Version: 0.0.0.9000
 Authors@R: 
@@ -13,7 +13,7 @@ Authors@R:
               email = "eric.Jaehnig@bcm.edu",
               comment = c(ORCID = "0000-0001-9618-6011"))
       )
-Description: benchmarkeR provides two benchmarking approaches for kinase activity inference (perturbation-based and cptac-based).
+Description: benchmarKIN provides two benchmarking approaches for kinase activity inference (perturbation-based and tumor-based).
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
