@@ -8,10 +8,7 @@ benchmarKIN provides two complementary benchmarking approaches to evaluate
 kinase activity inference tools. This has already been applied to a number
 of computational algorithms and prior knowledge resources [here](https://github.com/saezlab/kinase_benchmark).
 
-To run the benchmarking approaches yourself please follow these tutorials:
-
-- [Perturbation based benchmark](https://github.com/saezlab/benchmarKIN/blob/main/vignettes/perturbBench.Rmd)
-- [Tumor based benchmark](https://github.com/saezlab/benchmarKIN/blob/main/vignettes/tumorBench.Rmd)
+To run the benchmarking approaches yourself please check out the [documentation](https://benchmarkin.readthedocs.io/en/latest/index.html).
 
 ## Installation
 To install `benchmarKIN` please run:
