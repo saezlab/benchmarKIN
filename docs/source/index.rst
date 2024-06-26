@@ -21,7 +21,7 @@ If you have any question or problem do not hesitate to open an `issue <https://g
 
 Citation
 --------
-Preprint out soon
+Preprint out soon.
 
 .. toctree::
    :maxdepth: 1
