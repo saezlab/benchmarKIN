@@ -14,7 +14,7 @@ benchmark approach and the tumor-based benchmark approach.
    benchmarKIN contains two complementary approaches for kinase activity inference
 
 
-Check out the :doc:`perturbation-based` or :doc:`tumor-based` benchmark sections for further information,
+Check out the perturbation-based or tumor-based benchmark sections for further information,
 of how test your own kinase activity inference method. 
 
 If you have any question or problem do not hesitate to open an `issue <https://github.com/saezlab/benchmarKIN/issues>`_.
