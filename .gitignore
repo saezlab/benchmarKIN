@@ -36,8 +36,6 @@ vignettes/*.pdf
 # Ignore previewed README files
 */README.html
 
-docs
-docs/
 inst/doc
 .Rproj.user
 *.Rproj
