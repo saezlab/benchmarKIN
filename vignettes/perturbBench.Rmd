@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
+# Peturbation-based benchmark
+## Introduction
 This benchmark is based on experiments where specific kinases are expected to 
 have an increased or decreased activity after being perturbed in 
 various cell line experiments. 
@@ -26,7 +27,7 @@ or kinase-substrate libraries.
 The methods are then evaluated based on whether they are able to recapitulate
 the peturbed kinases based on their inferred activities. 
 
-# Getting set up
+## Getting set up
 We first load the required packages to run the benchmark.
 ```{r setup}
 library(benchmarKIN)
@@ -49,7 +50,7 @@ py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE)
 # py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE, envname = "path-to-environment")
 ```
 
-# Perturbation data
+## Perturbation data
 The perturbation data can be extracted using the load_perturbData() function.
 This data frame contains the logFC for the perturbation collection previously
 published by Hernandez-Armenta et al. and the perturbation experiments from
@@ -66,13 +67,13 @@ contains information about the targeted kinase(s), the PMID, etc.
 meta <- load_meta()
 head(meta)
 ```
-# Kinase activity inference
+## Kinase activity inference
 This data can be used to test any method for kinase activity inference. 
 
 We will use the z-score (as implemented by RoKAI) and the PhosphoSitePlus kinase-
 substrate library as in example.
 
-## Kinase-substrate library
+### Kinase-substrate library
 For that we have already processed a version of PhosphoSitePlus (accessed: 19/04/2023)
 that can be mapped to our phosphorylation site ids.
 
@@ -92,7 +93,7 @@ ppsp <- phosphositeplus %>%
 head(ppsp)
 ```
 
-## Activity inference using the z-score 
+### Activity inference using the z-score 
 The z-score calculates a score for each kinase by aggregating the change in
 abundance of the direct targets in relation to changes in the non-targets.
 
@@ -101,8 +102,8 @@ act_scores <- run_zscore(mat = mat, network = ppsp)
 
 act_scores[1:5, 1:5]
 ```
-# Perturbation benchmark
-## Area under the receiver operator curve
+## Perturbation benchmark
+### Area under the receiver operator curve
 The inferred kinase activities can now be evaluated using the run_perturbBench()
 function. Hereby, it is important to note that the kinase symbol needs to match
 with the meta data (here gene symbols).
@@ -122,7 +123,7 @@ auroc_p <- performance %>%
 auroc_p
 ```
 
-## Area under the receiver operator curve
+### Area under the receiver operator curve
 Additionally we can calculate the rank and scaled rank of the perturbed kinase(s)
 in their respective experiments. A lower rank/scaled rank indicates a better
 performance of the method

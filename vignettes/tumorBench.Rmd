@@ -14,7 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Introduction
+# Tumor-based benchmark
+## Introduction
 This benchmark is based on the cptac dataset which contains genomics, proteomics
 and phosphoproteomics information of multiple patients from different cancer types. 
 Here, the proteomics data was used to identify a gold standard set of deregulated 
@@ -27,7 +28,7 @@ set of kinases.
 For this, we provide the normalized abundance of phosphorylation sites for each
 patient across different cancer types.
 
-# Getting set up
+## Getting set up
 We first load the required packages to run the benchmark.
 
 ```{r setup}
@@ -35,7 +36,7 @@ library(benchmarKIN)
 library(dplyr)
 ```
 
-# CPTAC data
+## CPTAC data
 We then take a look at the phosphoproteomics data from CPTAC. This data is 
 stored as a long data frame in cptacData. For our analysis we will transform
 it to a list of wide data frames for each cancer type which can be used for
@@ -53,13 +54,13 @@ cptac_list <- purrr::map(unique(cptacData$cancer), function(cancer_type){
 names(cptac_list) <- unique(cptacData$cancer)
 ```
 
-# Activity estimation
+## Activity estimation
 Here, we will test the z-score (as implemented by RoKAI) in combination with the
 PhosphoSitePlus kinase-substrate library as in example.
 
 In theory any other method can also be tested with that data.
 
-## Kinase-substrate library
+### Kinase-substrate library
 For that we have already processed a version of PhosphoSitePlus (accessed: 19/04/2023)
 that can be mapped to our phosphorylation site ids.
 
@@ -84,7 +85,7 @@ mapped_phosphositeplus <- phosphositeplus %>%
   dplyr::distinct()
 ```
 
-## Activity inference using the z-score 
+### Activity inference using the z-score 
 The z-score calculates a score for each kinase by aggregating the change in
 abundance of the direct targets in relation to changes in the non-targets.
 
@@ -92,8 +93,8 @@ abundance of the direct targets in relation to changes in the non-targets.
 act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_phosphositeplus)))
 ```
 
-# CPTAC benchmark
-## Gold standard set of kinases
+## CPTAC benchmark
+### Gold standard set of kinases
 The gold standard set contains kinases per patient which are expected to have 
 a high or a low activity. Here we can look at the kinases which are supposed to
 have a high activity for patients which BRCA.

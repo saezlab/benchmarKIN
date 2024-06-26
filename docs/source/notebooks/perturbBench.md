@@ -1,4 +1,6 @@
-# Introduction
+# Peturbation-based benchmark
+
+## Introduction
 
 This benchmark is based on experiments where specific kinases are
 expected to have an increased or decreased activity after being
@@ -11,7 +13,7 @@ using different methods or kinase-substrate libraries.
 The methods are then evaluated based on whether they are able to
 recapitulate the peturbed kinases based on their inferred activities.
 
-# Getting set up
+## Getting set up
 
 We first load the required packages to run the benchmark.
 
@@ -44,7 +46,7 @@ py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE)
 # py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE, envname = "path-to-environment")
 ```
 
-# Perturbation data
+## Perturbation data
 
 The perturbation data can be extracted using the load_perturbData()
 function. This data frame contains the logFC for the perturbation
@@ -85,14 +87,14 @@ head(meta)
 #> 6 21659604   MTOR   -1      <NA> <NA>
 ```
 
-# Kinase activity inference
+## Kinase activity inference
 
 This data can be used to test any method for kinase activity inference.
 
 We will use the z-score (as implemented by RoKAI) and the
 PhosphoSitePlus kinase- substrate library as in example.
 
-## Kinase-substrate library
+### Kinase-substrate library
 
 For that we have already processed a version of PhosphoSitePlus
 (accessed: 19/04/2023) that can be mapped to our phosphorylation site
@@ -133,7 +135,7 @@ head(ppsp)
 #> 6 PRKCD   HNRNPK_S302|HNRNPK|S302     1
 ```
 
-## Activity inference using the z-score
+### Activity inference using the z-score
 
 The z-score calculates a score for each kinase by aggregating the change
 in abundance of the direct targets in relation to changes in the
@@ -151,9 +153,9 @@ act_scores[1:5, 1:5]
 #> AURKA   -0.2297719 -0.4751803 0.49620247 -0.3783352 -2.1865515
 ```
 
-# Perturbation benchmark
+## Perturbation benchmark
 
-## Area under the receiver operator curve
+### Area under the receiver operator curve
 
 The inferred kinase activities can now be evaluated using the
 run_perturbBench() function. Hereby, it is important to note that the
@@ -175,9 +177,9 @@ auroc_p <- performance %>%
 auroc_p
 ```
 
-![](/private/var/folders/th/nbdnn8l96tx88tt8nm212dpw0000gn/T/Rtmp0r0KxJ/preview-341391a81f.dir/perturbBench_files/figure-markdown_github/plot-1.png)
+![](/private/var/folders/th/nbdnn8l96tx88tt8nm212dpw0000gn/T/Rtmp0r0KxJ/preview-34134fcfa2cb.dir/perturbBench_files/figure-markdown_github/plot-1.png)
 
-## Area under the receiver operator curve
+### Area under the receiver operator curve
 
 Additionally we can calculate the rank and scaled rank of the perturbed
 kinase(s) in their respective experiments. A lower rank/scaled rank

@@ -36,3 +36,4 @@ Preprint out soon.
    :caption: Vignettes
 
    notebooks/perturbBench
+   notebooks/tumorBench
