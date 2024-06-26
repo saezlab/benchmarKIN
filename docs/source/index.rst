@@ -10,6 +10,8 @@ benchmark approach and the tumor-based benchmark approach.
    :alt: benchmarKIN's workflow
    :align: center
    :class: no-scaled-link
+   
+   benchmarKIN contains two complementary approaches for kinase activity inference
 
 
 Check out the :doc:`perturbation-based` or :doc:`tumor-based` benchmark sections for further information,
@@ -20,3 +22,17 @@ If you have any question or problem do not hesitate to open an `issue <https://g
 Citation
 --------
 Preprint out soon
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Main
+
+   installation
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :caption: Vignettes
+
+   notebooks/perturbBench
