@@ -3,8 +3,8 @@
 # -- Project information
 
 project = 'benchmarKIN'
-copyright = '2024'
-author = 'Müller-Dott S., Jaehnig E.J., Pham Munchic K., Yaron-Barir T.M., Dugourd A., Garrido-Rodriguez M., Johnson J.L., Lussana A., Petsalaki E., Savage S.R., Jiang W., Lei J.T., Krug K., Cantley L.C., Mani D.R., Zhang B., Saez-Rodriguez J.'
+copyright = '2024, Müller-Dott S., Jaehnig E.J., Pham Munchic K., Yaron-Barir T.M., Dugourd A., Garrido-Rodriguez M., Johnson J.L., Lussana A., Petsalaki E., Savage S.R., Jiang W., Lei J.T., Krug K., Cantley L.C., Mani D.R., Zhang B., Saez-Rodriguez J.'
+author = 'Sophia Müller-Dott'
 
 release = '0.1'
 version = '0.1.0'
