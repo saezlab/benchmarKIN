@@ -1,22 +1,21 @@
-Welcome to Lumache's documentation!
+benchmarKIN - Evaluation of methods for kinase activity inference
 ===================================
 
-**Lumache** (/lu'make/) is a Python library for cooks and food lovers
-that creates recipes mixing random ingredients.
-It pulls data from the `Open Food Facts database <https://world.openfoodfacts.org/>`_
-and offers a *simple* and *intuitive* API.
+**benchmarKIN** is a package for evaluation of kinase activity inference tools. It 
+provides two complementary benchmarking approaches for evaluation: The perturbation-based
+benchmark approach and the tumor-based benchmark approach. 
 
-Check out the :doc:`usage` section for further information, including
-how to :ref:`installation` the project.
+.. figure:: graphical_abstract.png
+   :height: 500px
+   :alt: benchmarKIN's workflow
+   :align: center
+   :class: no-scaled-link
 
-.. note::
+Check out the :doc:`perturbation-based` or :doc:`tumor-based` benchmark sections for further information,
+of how test your own kinase activity inference method. 
 
-   This project is under active development.
+If you have any question or problem do not hesitate to open an `issue <https://github.com/saezlab/benchmarKIN/issues>`_.
 
-Contents
+Citation
 --------
-
-.. toctree::
-
-   usage
-   api
+Preprint out soon
