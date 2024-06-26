@@ -6,10 +6,11 @@ provides two complementary benchmarking approaches for evaluation: The perturbat
 benchmark approach and the tumor-based benchmark approach. 
 
 .. figure:: graphical_abstract.png
-   :height: 500px
+   :height: 300px
    :alt: benchmarKIN's workflow
    :align: center
    :class: no-scaled-link
+
 
 Check out the :doc:`perturbation-based` or :doc:`tumor-based` benchmark sections for further information,
 of how test your own kinase activity inference method. 
