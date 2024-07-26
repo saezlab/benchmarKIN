@@ -1,6 +1,6 @@
 ---
 title: "Tumor-based Benchmark"
-output: rmarkdown::html_vignette
+output: md_document
 vignette: >
   %\VignetteIndexEntry{tumorBench}
   %\VignetteEngine{knitr::rmarkdown}
@@ -95,19 +95,30 @@ act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, ne
 
 ## CPTAC benchmark
 ### Gold standard set of kinases
-The gold standard set contains kinases per patient which are expected to have 
-a high or a low activity. Here we can look at the kinases which are supposed to
-have a high activity for patients which BRCA.
-```{r cptacGS}
-str(cptacGS$BRCA$GS_pos_pairs)
-```
+For each cancer type, a gold standard set of kinases was developed based on
+the protein levels for each kinase. For the gold standard set kinases 
+in the top and bottom 5% relative to the normal distribution of the protein levels 
+were selected. Here we can look at the kinases which were located in the top
+5% and are supposed to have a high activity for patients which BRCA. 
+Additionally we also provide the gold standard sets using the top and bottom
+2.5%, 10% and 15% (cptacGS_2pt5, cptacGS_10 and cptacGS_15) of kinases relative 
+to the normal distribution. 
 
-## Area under the receiver operator curve
+```{r cptacGS}
+data(cptacGS_5)
+str(cptacGS_5$BRCA$GS_pos_pairs)
+```
+Additionally we developed an alternative gold standard set of kinases using the
+activating sites on kinases. Hereby, the same thresholds were applied to the kinase 
+phosphosite levels. This gold standard set can also be accessed and used in the 
+benchmark (cptacGS_act_2pt5, cptacGS_act_5, cptacGS_act_10 and cptacGS_act_15).
+
+### Area under the receiver operator curve
 The inferred kinase activities can then be evaluated using the benchmarkROC()
 function. Hereby, it is important to note that the kinase symbol needs to match
 with the gold standard set (here gene symbols).
 ```{r benchmarl}
-performance <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS)
+performance <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_5)
 ```
 
 We can then plot the areas under the receiver operator curve (AUROCs) and can 

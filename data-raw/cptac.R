@@ -22,7 +22,26 @@ cptacData <- cptac_long
 usethis::use_data(cptacData, compress = "xz", overwrite = TRUE)
 
 # load goldS Standard set based on proteomics
-cptacGS <- readRDS("../kinase_benchmark/data/misc/benchmarking_gold_standard_top5per.Rds")
+cptacGS_2pt5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_2pt5percent.Rds")
+cptacGS_5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/actsite_5percent.Rds")
+cptacGS_10 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_10percent.Rds")
+cptacGS_15 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_15percent.Rds")
 
 ## Save processed cptacData
-usethis::use_data(cptacGS, overwrite = TRUE)
+usethis::use_data(cptacGS_2pt5, overwrite = TRUE)
+usethis::use_data(cptacGS_5, overwrite = TRUE)
+usethis::use_data(cptacGS_10, overwrite = TRUE)
+usethis::use_data(cptacGS_15, overwrite = TRUE)
+
+# load goldS Standard set based on activating sites
+cptacGS_act_2pt5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/actsite_2pt5percent.Rds")
+cptacGS_act_5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/actsite_5percent.Rds")
+cptacGS_act_10 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/actsite_10percent.Rds")
+cptacGS_act_15 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/actsite_15percent.Rds")
+
+## Save processed cptacData
+usethis::use_data(cptacGS_act_2pt5, overwrite = TRUE)
+usethis::use_data(cptacGS_act_5, overwrite = TRUE)
+usethis::use_data(cptacGS_act_10, overwrite = TRUE)
+usethis::use_data(cptacGS_act_15, overwrite = TRUE)
+
