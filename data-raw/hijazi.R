@@ -10,6 +10,7 @@ raw_MCF7 <- "../kinase_benchmark/data/datasets/hijazi/MCF7_fc.tsv"
 p_MCF7 <- "../kinase_benchmark/data/datasets/hijazi/MCF7_pval.tsv"
 
 targets_file <- "../kinase_benchmark/data/datasets/hijazi/targets_hijazi.tsv"
+inhibitory_file <- "../kinase_benchmark/data/datasets/hijazi/inhibitor_selectivity.tsv"
 
 ## Prepare data ---------------------------
 # LogFC of benchmark data HL60
@@ -38,7 +39,13 @@ HL60_mono_df <- HL60_mono %>%
   mutate(protein = map_chr(str_split(sh.index.sites, "\\("), 1), .after = sh.index.sites) %>%
   mutate(aa = map_chr(str_split(sh.index.sites, "\\("), 2) %>% str_remove("\\)"), .after = protein) %>%
   mutate(id = paste0(protein, "_", aa, "|", protein, "|", aa), .before = sh.index.sites) %>%
-  dplyr::select(-protein, -aa, -sh.index.sites)
+  dplyr::select(-protein, -aa, -sh.index.sites) %>%
+  # Fix gene names which were converted to dates
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/09/18 00:00:00", "SEPT9")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/07/18 00:00:00", "SEPT7")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/06/18 00:00:00", "SEPT6")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/05/18 00:00:00", "SEPT5")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/02/18 00:00:00", "SEPT2"))
 
 
 # LogFC of benchmark data MCF7
@@ -67,7 +74,13 @@ MCF7_mono_df <- MCF7_mono %>%
   mutate(protein = map_chr(str_split(sh.index.sites, "\\("), 1), .after = sh.index.sites) %>%
   mutate(aa = map_chr(str_split(sh.index.sites, "\\("), 2) %>% str_remove("\\)"), .after = protein) %>%
   mutate(id = paste0(protein, "_", aa, "|", protein, "|", aa), .before = sh.index.sites) %>%
-  dplyr::select(-protein, -aa, -sh.index.sites)
+  dplyr::select(-protein, -aa, -sh.index.sites) %>%
+  # Fix gene names which were converted to dates
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/09/18 00:00:00", "SEPT9")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/07/18 00:00:00", "SEPT7")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/06/18 00:00:00", "SEPT6")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/05/18 00:00:00", "SEPT5")) %>%
+  dplyr::mutate(id = stringr::str_replace_all(id, "09/02/18 00:00:00", "SEPT2"))
 
 phospho_df <- full_join(HL60_mono_df, MCF7_mono_df, by = "id") %>%
   mutate(id = str_remove_all(id, ";")) %>%
@@ -94,8 +107,33 @@ targets_manual <- read_tsv(targets_file, col_types = cols()) %>%
 
 hijaziMeta <- left_join(metaData, targets_manual %>% dplyr::select(drug, target), by = "drug") %>%
   filter(!is.na(target))
-hijaziMeta <- tidyr::separate_rows(hijaziMeta, target, sep = ";") %>%
+
+## Select targets based on drug selectivity data
+drug_selectivity <- read_tsv(inhibitory_file, col_types = cols())
+
+drug_selectivity_df <- drug_selectivity %>%
+  pivot_longer(!kinase, names_to = "drug_id", values_to = "selectivity") %>%
+  mutate(dataset = map_chr(str_split(drug_id, "\\.\\."), 1)) %>%
+  mutate(drug = map_chr(str_split(drug_id, "\\.\\."), 2)) %>%
+  mutate(drug = str_remove_all(drug, "-")) %>%
+  mutate(drug = recode(drug,
+                       "Silmitasertib" = "CX4945",
+                       "Pictilisib" = "GDC0941",
+                       "Ribociclib" = "LEE011",
+                       "Abemaciclib" = "LY2835219",
+                       "Amuvatinib" = "MP470"))
+
+targets_discoverX <- drug_selectivity_df %>%
+  filter(dataset == "DiscoverX") %>%
+  filter(selectivity < 50) %>%
+  distinct(kinase, drug) %>%
+  group_by(drug) %>%
+  summarise(target_discoverX = paste(kinase, collapse = ";"))
+
+hijaziMeta <- left_join(hijaziMeta, targets_discoverX, by = "drug") %>%
+  filter(!is.na(target))  %>%
   tibble::add_column(PMID = 31959955)
+
 
 ## Merge and save `perturbData` dataset ------
 usethis::use_data(hijaziData, overwrite = TRUE)
