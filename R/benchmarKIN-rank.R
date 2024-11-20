@@ -90,3 +90,40 @@ run_rank <- function(act, meta){
 
   return(rank_df)
 }
+
+#' run_phit
+#'
+#' @description
+#' Calculates the percentage of the perturbed kinase(s) appearing among the top
+#' k kinases based on its activty.
+#'
+#' @param act Activity matrix with kinases as rows and experiments as columns.
+#' @param meta Data frame containing sample (experiment) information and perturb (target) in each experiment.
+#' @param k Number of top kinases to test in each experiment.
+#'
+#' @return Data frame containing the rank of each perturbed kinase based on its activity.
+#' @export
+#' @import tibble tidyr dplyr stringr
+#'
+#' @examples
+#' # Create random meta and matrix
+#' set.seed(321)
+#'
+#' mat <- data.frame(exp1 = runif(5, min = -2, max = 2),
+#'                   exp2 = runif(5, min = -3, max = 2))
+#' rownames(mat) <- c("A", "B", "C", "D", "E")
+#'
+#' meta <- data.frame(id = c("exp1", "exp2"),
+#'                    target = c("E", "A"),
+#'                    sign = c(1, -1))
+#'
+#' # run benchmark
+#' res <- run_phit(act = mat, meta = meta, k = 1)
+#'
+run_phit <- function(act, meta, k = 10){
+  ## Get rank ---------------------------
+  rank_df <- run_rank(act, meta)
+  phit <- sum(rank_df$rank <= k, na.rm = T)/nrow(rank_df)
+
+  return(phit)
+}
