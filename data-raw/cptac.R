@@ -23,7 +23,7 @@ usethis::use_data(cptacData, compress = "xz", overwrite = TRUE)
 
 # load goldS Standard set based on proteomics
 cptacGS_2pt5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_2pt5percent.Rds")
-cptacGS_5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/actsite_5percent.Rds")
+cptacGS_5 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_5percent.Rds")
 cptacGS_10 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_10percent.Rds")
 cptacGS_15 <- readRDS("../kinase_benchmark/data/tumor_benchmark/GSsets/protein_15percent.Rds")
 
