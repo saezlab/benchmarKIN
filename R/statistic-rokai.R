@@ -34,19 +34,19 @@ run_zscore <- function(mat,
                        network,
                        minsize = 5
 ) {
-  network_filtered <- network %>%
-    dplyr::filter(target %in% rownames(mat)) %>%
-    dplyr::group_by(source) %>%
-    dplyr::filter(dplyr::n() >= minsize)
-
   # Analysis ----------------------------------------------------------------
-  kin_sub <- network_filtered %>%
-    tidyr::pivot_wider(values_from = mor, names_from = target, values_fill = 0) %>%
-    tibble::column_to_rownames("source")
-
   scores <- purrr::map_dfr(1:ncol(mat), function(i_mat){
     V <- mat[i_mat] %>%
       tidyr::drop_na()
+
+    network_filtered <- network %>%
+      dplyr::filter(target %in% rownames(V)) %>%
+      dplyr::group_by(source) %>%
+      dplyr::filter(dplyr::n() >= minsize)
+
+    kin_sub <- network_filtered %>%
+      tidyr::pivot_wider(values_from = mor, names_from = target, values_fill = 0) %>%
+      tibble::column_to_rownames("source")
 
     S <- stats::sd(V[,1])
 
