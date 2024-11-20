@@ -4,7 +4,10 @@
 \alias{load_perturbData}
 \title{load_perturbData}
 \usage{
-load_perturbData()
+load_perturbData(dataset = "both")
+}
+\arguments{
+\item{dataset}{whether to load the "hijazi", "hernandez" or "both" datasets}
 }
 \value{
 data frame containing logFC of different

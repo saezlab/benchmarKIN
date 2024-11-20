@@ -4,7 +4,13 @@
 \alias{load_meta}
 \title{load_meta}
 \usage{
-load_meta()
+load_meta(dataset = "both", targets_hijazi = "manual")
+}
+\arguments{
+\item{dataset}{whether to load the "hijazi", "hernandez" or "both" datasets}
+
+\item{targets_hijazi}{whether to use a "manual" list of targets for the
+inhibitors or whether to consider all kinases targets based on the "selectivity"}
 }
 \value{
 data frame containing additional information
