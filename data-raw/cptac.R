@@ -3,7 +3,7 @@ library(purrr)
 library(usethis)
 
 # load cptac processed phosphoproteomics data
-file_paths <- list.files("../kinase_benchmark/data/datasets/CPTAC_phospho/final", full.names = T, pattern = "original") #currently only locale
+file_paths <- list.files("../kinase_benchmark/data/datasets/cptac", full.names = T, pattern = "original") #currently only locale
 cptacData <- purrr::map(file_paths, readRDS)
 names(cptacData) <- sub(".*/([^_]+)_.*", "\\1", file_paths) %>% toupper()
 
