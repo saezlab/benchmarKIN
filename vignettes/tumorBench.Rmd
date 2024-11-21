@@ -34,6 +34,7 @@ We first load the required packages to run the benchmark.
 ```{r setup}
 library(benchmarKIN)
 library(dplyr)
+library(tibble)
 ```
 
 ## CPTAC data
@@ -70,7 +71,7 @@ head(phosphositeplus)
 For the tumor-based benchmark we remove auto-phosphorylation sites from the
 library to avoid data leakage from the gold standard sets used in this benchmark.
 
-```{r phosphositeplus}
+```{r autophos}
 phosphositeplus_filt <- phosphositeplus %>%
   dplyr::filter(source != target_protein)
 ```
@@ -132,7 +133,7 @@ str(cptacGS_act_5$BRCA$GS_pos_pairs)
 The inferred kinase activities can then be evaluated using the benchmarkROC()
 function. Hereby, it is important to note that the kinase symbol needs to match
 with the gold standard set (here gene symbols).
-```{r benchmarl}
+```{r benchmark}
 performance_prot <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_5)
 performance_act <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_act_5)
 ```
@@ -140,8 +141,8 @@ performance_act <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_act_
 We can then plot the areas under the receiver operator curve (AUROCs) and can 
 compare this with other methods or prior knowledge resources.
 ```{r plot}
-performance <- rbind(performance_prot %>% add_column(benchmark = "protein-based"),
-                     performance_act %>% add_column(benchmark = "activating site-based"))
+performance <- rbind(performance_prot %>% tibble::add_column(benchmark = "protein-based"),
+                     performance_act %>% tibble::add_column(benchmark = "activating site-based"))
 auroc_p <- performance %>%
   ggplot2::ggplot(ggplot2::aes(x=method, y=auroc, fill = benchmark)) +
   ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
