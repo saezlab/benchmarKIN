@@ -67,6 +67,14 @@ that can be mapped to our phosphorylation site ids.
 ```{r phosphositeplus}
 head(phosphositeplus)
 ```
+For the tumor-based benchmark we remove auto-phosphorylation sites from the
+library to avoid data leakage from the gold standard sets used in this benchmark.
+
+```{r phosphositeplus}
+phosphositeplus_filt <- phosphositeplus %>%
+  dplyr::filter(source != target_protein)
+```
+
 After mapping the phosphorylation sites we can bring it into the right format to
 run the run_zscore function.
 
@@ -77,7 +85,7 @@ map_pps <- data.frame(pps_id = pps_id) %>%
   dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 1)) %>%
   dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(ENSEMBL, "\\."), 1))  %>%
   dplyr::mutate(sequence = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 4))
-mapped_phosphositeplus <- phosphositeplus %>%
+mapped_phosphositeplus <- phosphositeplus_filt %>%
   dplyr::left_join(map_pps, by = c("ENSEMBL", "sequence"), relationship = "many-to-many") %>%
   dplyr::mutate(target = pps_id) %>%
   dplyr::filter(!is.na(pps_id)) %>%
@@ -93,8 +101,8 @@ abundance of the direct targets in relation to changes in the non-targets.
 act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_phosphositeplus)))
 ```
 
-## CPTAC benchmark
-### Gold standard set of kinases
+## Tumor-based benchmark
+### Protein-based gold standard set selection
 For each cancer type, a gold standard set of kinases was developed based on
 the protein levels for each kinase. For the gold standard set kinases 
 in the top and bottom 5% relative to the normal distribution of the protein levels 
@@ -108,24 +116,36 @@ to the normal distribution.
 data(cptacGS_5)
 str(cptacGS_5$BRCA$GS_pos_pairs)
 ```
-Additionally we developed an alternative gold standard set of kinases using the
-activating sites on kinases. Hereby, the same thresholds were applied to the kinase 
-phosphosite levels. This gold standard set can also be accessed and used in the 
+### Activating site-based gold standard set selection
+In addition to the protein-based selection,  we developed an alternative gold 
+standard set of kinases using the activating sites on kinases. Hereby, the same 
+thresholds were applied to the kinase phosphosite levels. 
+This gold standard set can also be accessed and used in the 
 benchmark (cptacGS_act_2pt5, cptacGS_act_5, cptacGS_act_10 and cptacGS_act_15).
+
+```{r cptacGSact}
+data(cptacGS_act_5)
+str(cptacGS_act_5$BRCA$GS_pos_pairs)
+```
 
 ### Area under the receiver operator curve
 The inferred kinase activities can then be evaluated using the benchmarkROC()
 function. Hereby, it is important to note that the kinase symbol needs to match
 with the gold standard set (here gene symbols).
 ```{r benchmarl}
-performance <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_5)
+performance_prot <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_5)
+performance_act <- benchmarkROC(score_lists = act_scores, GS_list = cptacGS_act_5)
 ```
 
 We can then plot the areas under the receiver operator curve (AUROCs) and can 
 compare this with other methods or prior knowledge resources.
 ```{r plot}
+performance <- rbind(performance_prot %>% add_column(benchmark = "protein-based"),
+                     performance_act %>% add_column(benchmark = "activating site-based"))
 auroc_p <- performance %>%
-  ggplot2::ggplot(ggplot2::aes(x=method, y=auroc)) +
+  ggplot2::ggplot(ggplot2::aes(x=method, y=auroc, fill = benchmark)) +
   ggplot2::geom_boxplot(outlier.size=1, lwd=0.6) +
   ggplot2::geom_hline(yintercept = 0.5)
+
 auroc_p
+```
