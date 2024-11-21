@@ -1,4 +1,6 @@
-# Introduction
+# Perturbation-based benchmark
+
+## Introduction
 
 This benchmark is based on experiments where specific kinases are
 expected to have an increased or decreased activity after being
@@ -11,7 +13,7 @@ using different methods or kinase-substrate libraries.
 The methods are then evaluated based on whether they are able to
 recapitulate the peturbed kinases based on their inferred activities.
 
-# Getting set up
+## Getting set up
 
 We first load the required packages to run the benchmark.
 
@@ -40,7 +42,7 @@ package we also need to set up reticulate.
     # use_python("path-to-python", required = TRUE)  #you can find the correct path by activating your environment and typing "which python" into the terminal
     # py_install("git+https://github.com/saezlab/decoupler-py.git", pip = TRUE, envname = "path-to-environment")
 
-# Perturbation data
+## Perturbation data
 
 The perturbation data can be extracted using the load\_perturbData()
 function. This data frame contains the logFC for the perturbation
@@ -77,7 +79,7 @@ etc.
     #> 5 21659604   MTOR   -1      <NA> <NA>
     #> 6 21659604   MTOR   -1      <NA> <NA>
 
-# Kinase activity inference
+## Kinase activity inference
 
 This data can be used to test any method for kinase activity inference.
 
@@ -121,7 +123,7 @@ format to run the run\_zscore function.
     #> 5 PRKCD   BCL2_S70|BCL2|S70           1
     #> 6 PRKCD   HNRNPK_S302|HNRNPK|S302     1
 
-## Activity inference using the z-score
+### Activity inference using the z-score
 
 The z-score calculates a score for each kinase by aggregating the change
 in abundance of the direct targets in relation to changes in the
@@ -137,9 +139,9 @@ non-targets.
     #> LATS1   -1.6980139 -2.0950547 -0.86222145  0.3599908         NA
     #> CDK7    -0.1311981 -0.7091949 -0.99505999 -2.2514506  0.3927329
 
-# Perturbation benchmark
+## Evaluation
 
-## Area under the receiver operator curve
+### Area under the receiver operator curve
 
 The inferred kinase activities can now be evaluated using the
 run\_perturbBench() function. Hereby, it is important to note that the
@@ -159,7 +161,7 @@ and can compare this with other methods or prior knowledge resources.
 
 ![](perturbBench_files/figure-markdown_strict/plot-1.png)
 
-## Scaled rank
+### Scaled rank
 
 Additionally we can calculate the rank and scaled rank of the perturbed
 kinase(s) in their respective experiments. A lower rank/scaled rank
@@ -169,7 +171,7 @@ indicates a better performance of the method
     median(rank$scaled_rank)
     #> [1] 0.1213235
 
-## <Phit@k>
+### Phit
 
 We can also calculate how often the perturbed kinase(s) ranked in the
 top k kinase in their respective experiments based on their activities.
