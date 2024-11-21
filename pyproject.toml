@@ -4,6 +4,6 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "benchmarKIN"
-license = {"gpl-3.0-only"}
+license = {text = "gpl-3.0-only"}
 authors = [{name = "Sophia Müller-Dott", email = "sophia.mueller-dott@uni-heidelberg.de"}]
 dynamic = ["version", "description"]
