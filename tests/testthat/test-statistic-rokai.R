@@ -16,3 +16,43 @@ test_that("test run_zscore", {
   expect_equal(nrow(res), 3)
   expect_equal(round(res[1,1], 2), 0.38)
 })
+
+
+
+test_that("test run_zscore_nooverlap", {
+  set.seed(123)
+
+  # Create random network and matrix
+  net <- data.frame(source = rep(c("A", "B", "C"), each = 5),
+                    target = sample(rep(c("V", "W", "X", "Y", "Z"), each = 3)),
+                    mor = 1) %>%
+    dplyr::distinct()
+  mat <- data.frame(exp1 = runif(5, min = -2, max = 2))
+  rownames(mat) <- c("A", "B", "C", "D", "E")
+
+  # Activity estimation
+  res <- run_zscore(mat = mat, network = net, minsize = 2)
+
+  # Test function
+  expect_null(res)
+})
+
+
+test_that("test run_zscore_singleoverlap", {
+  set.seed(123)
+
+  # Create random network and matrix
+  net <- data.frame(source = c("A", "W", "X"),
+                    target  =c("X", "W", "A"),
+                    mor = 1) %>%
+    dplyr::distinct()
+  mat <- data.frame(exp1 = runif(5, min = -2, max = 2))
+  rownames(mat) <- c("A", "B", "C", "D", "E")
+
+  # Activity estimation
+  res <- run_zscore(mat = mat, network = net, minsize = 1)
+
+  # Test function
+  expect_equal(nrow(res), 1)
+  expect_equal(round(res[1,1], 2), -0.72)
+})

@@ -119,8 +119,8 @@ prepareBench <- function(act, meta, rm_bg = F, method_id = "method"){
       data.frame(mat) %>%
         tibble::add_column(experiment = experiment, .before = 1)
     } else {
-      df <- data.frame(matrix(NA, ncol = nrow(mat) + 1))
-      colnames(df) <- c("experiment", rownames(mat))
+      df <- data.frame(matrix(NA, ncol = nrow(act) + 1))
+      colnames(df) <- c("experiment", rownames(act))
       df
     }
   }) %>% dplyr::filter(!is.na(experiment))
