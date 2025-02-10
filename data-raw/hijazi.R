@@ -134,6 +134,50 @@ hijaziMeta <- left_join(hijaziMeta, targets_discoverX, by = "drug") %>%
   filter(!is.na(target))  %>%
   tibble::add_column(PMID = 31959955)
 
+## add kinase class
+kinase_class <- "https://zenodo.org/records/14824013/files/kinase_class.csv?download=1"
+
+# Perform the GET request to fetch the file content
+response <- httr::GET(kinase_class)
+# Read the content directly into R
+file_content <- httr::content(response, as = "raw")
+# Create a temporary file connection
+temp_file <- base::tempfile()
+# Write the content to the temporary file
+base::writeBin(file_content, temp_file)
+
+kin_class <- utils::read.csv(temp_file)
+hijaziMeta_separated <- hijaziMeta %>%
+  tidyr::separate_rows(target, sep = ";") %>%
+  dplyr::left_join(kin_class, by = c("target" = "source"))
+
+# Collapse target and source back together
+hijaziMeta_collapsed <- hijaziMeta_separated %>%
+  dplyr::group_by(dplyr::across(-c(target, class))) %>%  # Group by all other columns
+  dplyr::summarize(
+    target = paste(target, collapse = ";"),
+    class = paste(class, collapse = ";"),
+    .groups = "drop"
+  )
+
+## do the same for discoverX targets
+hijaziMeta_separated_disc <- hijaziMeta_collapsed %>%
+  tidyr::separate_rows(target_discoverX, sep = ";") %>%
+  dplyr::left_join(kin_class %>% rename("class_discoverX" = class), by = c("target_discoverX" = "source"))
+
+# Collapse target and source back together
+hijaziMeta_collapsed_disc <- hijaziMeta_separated_disc %>%
+  dplyr::group_by(dplyr::across(-c(target_discoverX, class_discoverX))) %>%  # Group by all other columns
+  dplyr::summarize(
+    target_discoverX = paste(target_discoverX, collapse = ";"),
+    class_discoverX = paste(class_discoverX, collapse = ";"),
+    .groups = "drop"
+  )
+
+hijaziMeta <- hijaziMeta_collapsed_disc %>%
+  dplyr::rename("treatment" = drug)
+
+hijaziData <- hijaziData[colnames(hijaziData) %in% c("ID", unique(hijaziMeta$id))]
 
 ## Merge and save `perturbData` dataset ------
 usethis::use_data(hijaziData, overwrite = TRUE)

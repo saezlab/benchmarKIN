@@ -67,7 +67,7 @@ hernandezMeta <- metaData %>%
   dplyr::filter(!id %in% exp_to_remove)
 
 # Rename phosphorylation sites to match with Hijazi
-hernandezData <- perturbData[colnames(perturbData) %in% c("ID", metaData$id)]
+hernandezData <- perturbData[colnames(perturbData) %in% c("ID", hernandezMeta$id)]
 id_df <- data.frame(id = hernandezData$ID)
 id_df$protein <- stringr::str_extract(id_df$id, "^[^|]+")
 id_df$aa <- stringr::str_extract(id_df$id, "(?<=\\|)[^|]+")
@@ -75,6 +75,23 @@ id_df$new <- paste0(id_df$protein, "_", id_df$aa, "|", id_df$protein, "|", id_df
 
 hernandezData$ID <- id_df$new
 hernandezData <- as.data.frame(hernandezData)[!duplicated(hernandezData$ID),]
+
+## add kinase class
+kinase_class <- "https://zenodo.org/records/14824013/files/kinase_class.csv?download=1"
+
+# Perform the GET request to fetch the file content
+response <- httr::GET(kinase_class)
+# Read the content directly into R
+file_content <- httr::content(response, as = "raw")
+# Create a temporary file connection
+temp_file <- base::tempfile()
+# Write the content to the temporary file
+base::writeBin(file_content, temp_file)
+
+kin_class <- utils::read.csv(temp_file)
+hernandezMeta <- hernandezMeta %>%
+  tidyr::separate_rows(target, sep = ";") %>%
+  dplyr::left_join(kin_class, by = c("target" = "source"))
 
 ## Merge and save `perturbData` dataset ------
 usethis::use_data(hernandezData, overwrite = TRUE)
