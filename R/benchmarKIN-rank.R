@@ -25,7 +25,7 @@
 #' # run benchmark
 #' res <- run_rank(act = mat, meta = meta)
 #'
-run_rank <- function(act, meta){
+run_rank <- function(act, meta, average = T){
   ## Get rank ---------------------------
   method_act_long <- act %>%
     tibble::rownames_to_column("kinase") %>%
@@ -88,6 +88,12 @@ run_rank <- function(act, meta){
   }) %>%
     dplyr::filter(!is.na(rank))
 
+  if (average){
+    rank_df <- rank_df %>%
+      dplyr::group_by(targets) %>%
+      dplyr::summarise(rank = mean(rank, na.rm = T), scaled_rank = mean(scaled_rank, na.rm = T), sample = paste(sample, collapse = ";"))
+  }
+
   return(rank_df)
 }
 
@@ -100,6 +106,7 @@ run_rank <- function(act, meta){
 #' @param act Activity matrix with kinases as rows and experiments as columns.
 #' @param meta Data frame containing sample (experiment) information and perturb (target) in each experiment.
 #' @param k Number of top kinases to test in each experiment.
+#' @param average Whether to average the rank per kinase first.
 #'
 #' @return Data frame containing the rank of each perturbed kinase based on its activity.
 #' @export
@@ -120,9 +127,10 @@ run_rank <- function(act, meta){
 #' # run benchmark
 #' res <- run_phit(act = mat, meta = meta, k = 1)
 #'
-run_phit <- function(act, meta, k = 10){
+run_phit <- function(act, meta, k = 10, average = T){
   ## Get rank ---------------------------
-  rank_df <- run_rank(act, meta)
+  rank_df <- run_rank(act, meta, average = average)
+
   phit <- sum(rank_df$rank <= k, na.rm = T)/nrow(rank_df)
 
   return(phit)
