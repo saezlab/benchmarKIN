@@ -52,7 +52,8 @@ run_zscore <- function(mat,
 
     valid_pps <- base::intersect(rownames(V), colnames(kin_sub))
 
-    kin_sub_f <- kin_sub[, valid_pps]
+    #Prevent coercion to 1-dimensional object in case there is only one result
+    kin_sub_f <- kin_sub[, valid_pps, drop=FALSE]
     V_f <- V %>%
       dplyr::filter(rownames(V) %in% valid_pps)
     V_f <- V_f[valid_pps,] %>%
@@ -61,13 +62,18 @@ run_zscore <- function(mat,
     kinaseScores <- (base::as.matrix(kin_sub_f) %*% V_f) / (S * base::sqrt(base::abs(base::as.matrix(kin_sub_f)) %*% base::rep(1, base::length(V_f))))
     kinaseScores <- kinaseScores[!is.na(kinaseScores),]
 
-    data.frame(source = names(kinaseScores), condition = colnames(V), score = base::as.numeric(base::as.vector(kinaseScores)))
+    #Prevent error if a single experiment has no overlap with the network
+    if (length(kinaseScores) > 0) {
+      data.frame(source = names(kinaseScores), condition = colnames(V), score = base::as.numeric(base::as.vector(kinaseScores)))
+    }
   })
+  #Prevent error if NO experiment had any overlap with the network
+  if (length(scores) > 0) {
+    act <- scores %>%
+      tidyr::pivot_wider(names_from = "condition", values_from = "score") %>%
+      tibble::column_to_rownames("source") %>%
+      base::as.data.frame()
 
-  act <- scores %>%
-    tidyr::pivot_wider(names_from = "condition", values_from = "score") %>%
-    tibble::column_to_rownames("source") %>%
-    base::as.data.frame()
-
-  return(act)
+    return(act)
+  }
 }
