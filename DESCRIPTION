@@ -1,6 +1,6 @@
 Package: benchmarKIN
 Title: Benchmark of kinase activity inference methods
-Version: 0.0.1.0000
+Version: 1.0.0.0000
 Authors@R: 
     c(person(given = "Sophia", 
              family = "Müller-Dott",
