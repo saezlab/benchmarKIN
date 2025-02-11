@@ -1,4 +1,4 @@
-# Perturbation-based benchmark
+# Peturbation-based benchmark
 
 ## Introduction
 
@@ -71,57 +71,61 @@ etc.
     #> 4  114_48                         Starved              Insulin       NA
     #> 5  117_48                          Torin1              Insulin       NA
     #> 6  120_48                       Rapamycin              Insulin       NA
-    #>       PMID target sign cell_line drug
-    #> 1 22777824   AKT1    1      <NA> <NA>
-    #> 2 22777824   AKT1    1      <NA> <NA>
-    #> 3 21857030   PLK1   -1      <NA> <NA>
-    #> 4 21659604   MTOR   -1      <NA> <NA>
-    #> 5 21659604   MTOR   -1      <NA> <NA>
-    #> 6 21659604   MTOR   -1      <NA> <NA>
+    #>       PMID target sign            class cell_line treatment
+    #> 1 22777824   AKT1    1 Serine/Threonine      <NA>      <NA>
+    #> 2 22777824   AKT1    1 Serine/Threonine      <NA>      <NA>
+    #> 3 21857030   PLK1   -1 Serine/Threonine      <NA>      <NA>
+    #> 4 21659604   MTOR   -1 Serine/Threonine      <NA>      <NA>
+    #> 5 21659604   MTOR   -1 Serine/Threonine      <NA>      <NA>
+    #> 6 21659604   MTOR   -1 Serine/Threonine      <NA>      <NA>
 
 ## Kinase activity inference
 
 This data can be used to test any method for kinase activity inference.
 
-We will use the z-score (as implemented by RoKAI) and the
-PhosphoSitePlus kinase- substrate library as in example.
+We will use the z-score (as implemented by RoKAI) and the curated
+kinase- substrate library as in example.
 
-## Kinase-substrate library
+### Kinase-substrate library
 
-For that we have already processed a version of PhosphoSitePlus
-(accessed: 19/04/2023) that can be mapped to our phosphorylation site
-ids.
+For that we have already processed a version of a combination of curated
+libraries, namely PhosphoSitePlus, PTMsigDB (excluding iKiP-DB) and the
+gold standard set of GPS 5.0, that can be mapped to our phosphorylation
+site ids.
 
-    head(phosphositeplus)
-    #> # A tibble: 6 × 8
-    #>   source  target      target_protein position   mor sequence ENSEMBL ENSEMBLPROT
-    #>   <chr>   <chr>       <chr>          <chr>    <dbl> <chr>    <chr>   <chr>      
-    #> 1 EIF2AK1 EIF2S1_S52  EIF2S1         S52          1 MILLSEL… ENSG00… <NA>       
-    #> 2 EIF2AK1 EIF2S1_S49  EIF2S1         S49          1 IEGMILL… ENSG00… <NA>       
-    #> 3 PRKCD   HDAC5_S259  HDAC5          S259         1 FPLRKTA… ENSG00… <NA>       
-    #> 4 PRKCD   PTPRA_S204  PTPRA          S204         1 PLLARSP… ENSG00… <NA>       
-    #> 5 PRKCD   BCL2_S70    BCL2           S70          1 RDPVART… ENSG00… <NA>       
-    #> 6 PRKCD   HNRNPK_S302 HNRNPK         S302         1 GRGGRGG… ENSG00… <NA>
+    head(curated)
+    #>    source      target target_protein position mor        sequence
+    #> 1 EIF2AK1  EIF2S1_S52         EIF2S1      S52   1 MILLSELSRRRIRSI
+    #> 2 EIF2AK1  EIF2S1_S49         EIF2S1      S49   1 IEGMILLSELSRRRI
+    #> 3   PRKCD  HDAC5_S259          HDAC5     S259   1 FPLRKTASEPNLKVR
+    #> 4   PRKCD  PTPRA_S204          PTPRA     S204   1 PLLARSPSTNRKYPP
+    #> 5   PRKCD    BCL2_S70           BCL2      S70   1 RDPVARTSPLQTPAA
+    #> 6   PRKCD HNRNPK_S302         HNRNPK     S302   1 GRGGRGGSRARNLPL
+    #>           ENSEMBL
+    #> 1 ENSG00000134001
+    #> 2 ENSG00000134001
+    #> 3 ENSG00000108840
+    #> 4 ENSG00000132670
+    #> 5 ENSG00000171791
+    #> 6 ENSG00000165119
 
 After mapping the phosphorylation sites we can bring it into the right
 format to run the run\_zscore function.
 
-    phosphositeplus$target <- paste(phosphositeplus$target, phosphositeplus$target_protein, phosphositeplus$position, sep = "|")
+    curated$target <- paste(curated$target, curated$target_protein, curated$position, sep = "|")
 
-    ppsp <- phosphositeplus %>%
+    curatedLib <- curated %>%
       dplyr::select(source, target, mor) %>%
       dplyr::distinct()
 
-    head(ppsp)
-    #> # A tibble: 6 × 3
-    #>   source  target                    mor
-    #>   <chr>   <chr>                   <dbl>
-    #> 1 EIF2AK1 EIF2S1_S52|EIF2S1|S52       1
-    #> 2 EIF2AK1 EIF2S1_S49|EIF2S1|S49       1
-    #> 3 PRKCD   HDAC5_S259|HDAC5|S259       1
-    #> 4 PRKCD   PTPRA_S204|PTPRA|S204       1
-    #> 5 PRKCD   BCL2_S70|BCL2|S70           1
-    #> 6 PRKCD   HNRNPK_S302|HNRNPK|S302     1
+    head(curatedLib)
+    #>    source                  target mor
+    #> 1 EIF2AK1   EIF2S1_S52|EIF2S1|S52   1
+    #> 2 EIF2AK1   EIF2S1_S49|EIF2S1|S49   1
+    #> 3   PRKCD   HDAC5_S259|HDAC5|S259   1
+    #> 4   PRKCD   PTPRA_S204|PTPRA|S204   1
+    #> 5   PRKCD       BCL2_S70|BCL2|S70   1
+    #> 6   PRKCD HNRNPK_S302|HNRNPK|S302   1
 
 ### Activity inference using the z-score
 
@@ -129,17 +133,17 @@ The z-score calculates a score for each kinase by aggregating the change
 in abundance of the direct targets in relation to changes in the
 non-targets.
 
-    act_scores <- run_zscore(mat = mat, network = ppsp)
+    act_scores <- run_zscore(mat = mat, network = curatedLib)
 
     act_scores[1:5, 1:5]
     #>               15_3       18_3        21_3       24_3      96_36
-    #> PRKCD    3.4764589  2.6096149  3.51570482  1.0777744 -4.5127391
+    #> PRKCD    3.1802463  2.3143338  3.42871525  1.2961965 -4.2716360
     #> CAMK2A   0.6594898  0.7286016  0.07022767  1.9630066         NA
     #> CSNK2A1  1.2340623  1.2400087  1.38745758  2.1008802 -0.1351479
     #> LATS1   -1.6980139 -2.0950547 -0.86222145  0.3599908         NA
-    #> CDK7    -0.1311981 -0.7091949 -0.99505999 -2.2514506  0.3927329
+    #> CDK7     0.1237668 -0.6063455 -0.92708849 -2.0542065  0.4655647
 
-## Evaluation
+## Perturbation benchmark
 
 ### Area under the receiver operator curve
 
@@ -159,9 +163,9 @@ and can compare this with other methods or prior knowledge resources.
 
     auroc_p
 
-![](perturbBench_files/figure-markdown_strict/plot-1.png)
+![](/private/var/folders/th/nbdnn8l96tx88tt8nm212dpw0000gn/T/RtmpFl3WvE/preview-3e9d2799757d.dir/perturbBench_files/figure-markdown_strict/plot-1.png)
 
-### Scaled rank
+### Area under the receiver operator curve
 
 Additionally we can calculate the rank and scaled rank of the perturbed
 kinase(s) in their respective experiments. A lower rank/scaled rank
@@ -169,18 +173,4 @@ indicates a better performance of the method
 
     rank <- run_rank(act = act_scores, meta = meta)
     median(rank$scaled_rank)
-    #> [1] 0.1213235
-
-### Phit
-
-We can also calculate how often the perturbed kinase(s) ranked in the
-top k kinase in their respective experiments based on their activities.
-The higher <Phit@k> is the better is the performance of a method
-
-    pHit_5 <- run_phit(act = act_scores, meta = meta, k = 5)
-    pHit_10 <- run_phit(act = act_scores, meta = meta, k = 10)
-
-    pHit_5
-    #> [1] 0.4835165
-    pHit_10
-    #> [1] 0.6318681
+    #> [1] 0.2354167

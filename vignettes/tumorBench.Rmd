@@ -57,22 +57,23 @@ names(cptac_list) <- unique(cptacData$cancer)
 
 ## Activity estimation
 Here, we will test the z-score (as implemented by RoKAI) in combination with the
-PhosphoSitePlus kinase-substrate library as in example.
+curated kinase-substrate library as in example.
 
 In theory any other method can also be tested with that data.
 
 ### Kinase-substrate library
-For that we have already processed a version of PhosphoSitePlus (accessed: 19/04/2023)
+For that we have already processed a version of a combination of three curated libraries,
+namely PhosphoSitePlus, PTMsigDB (excluding iKiP-DB) and the gold standard set of GPS 5.0,
 that can be mapped to our phosphorylation site ids.
 
-```{r phosphositeplus}
-head(phosphositeplus)
+```{r curated}
+head(curated)
 ```
 For the tumor-based benchmark we remove auto-phosphorylation sites from the
 library to avoid data leakage from the gold standard sets used in this benchmark.
 
 ```{r autophos}
-phosphositeplus_filt <- phosphositeplus %>%
+curated_filt <- curated %>%
   dplyr::filter(source != target_protein)
 ```
 
@@ -86,7 +87,7 @@ map_pps <- data.frame(pps_id = pps_id) %>%
   dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 1)) %>%
   dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(ENSEMBL, "\\."), 1))  %>%
   dplyr::mutate(sequence = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 4))
-mapped_phosphositeplus <- phosphositeplus_filt %>%
+mapped_curated <- curated_filt %>%
   dplyr::left_join(map_pps, by = c("ENSEMBL", "sequence"), relationship = "many-to-many") %>%
   dplyr::mutate(target = pps_id) %>%
   dplyr::filter(!is.na(pps_id)) %>%
@@ -99,7 +100,7 @@ The z-score calculates a score for each kinase by aggregating the change in
 abundance of the direct targets in relation to changes in the non-targets.
 
 ```{r activity}
-act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_phosphositeplus)))
+act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_curated)))
 ```
 
 ## Tumor-based benchmark

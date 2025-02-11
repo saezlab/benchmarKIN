@@ -1,6 +1,6 @@
 ---
 title: "Perturbation-based benchmark"
-output: rmarkdown::html_vignette
+output: rmarkdown::md_document
 vignette: >
   %\VignetteIndexEntry{perturbBench}
   %\VignetteEngine{knitr::rmarkdown}
@@ -70,27 +70,28 @@ head(meta)
 ## Kinase activity inference
 This data can be used to test any method for kinase activity inference. 
 
-We will use the z-score (as implemented by RoKAI) and the PhosphoSitePlus kinase-
+We will use the z-score (as implemented by RoKAI) and the curated kinase-
 substrate library as in example.
 
 ### Kinase-substrate library
-For that we have already processed a version of PhosphoSitePlus (accessed: 19/04/2023)
-that can be mapped to our phosphorylation site ids.
+For that we have already processed a version of a combination of curated libraries,
+namely PhosphoSitePlus, PTMsigDB (excluding iKiP-DB) and the gold standard set of
+GPS 5.0, that can be mapped to our phosphorylation site ids.
 
-```{r phosphositeplus}
-head(phosphositeplus)
+```{r curated}
+head(curated)
 ```
 After mapping the phosphorylation sites we can bring it into the right format to
 run the run_zscore function.
 
 ```{r map_ppsp}
-phosphositeplus$target <- paste(phosphositeplus$target, phosphositeplus$target_protein, phosphositeplus$position, sep = "|")
+curated$target <- paste(curated$target, curated$target_protein, curated$position, sep = "|")
 
-ppsp <- phosphositeplus %>%
+curatedLib <- curated %>%
   dplyr::select(source, target, mor) %>%
   dplyr::distinct()
 
-head(ppsp)
+head(curatedLib)
 ```
 
 ### Activity inference using the z-score 
@@ -98,7 +99,7 @@ The z-score calculates a score for each kinase by aggregating the change in
 abundance of the direct targets in relation to changes in the non-targets.
 
 ```{r activity}
-act_scores <- run_zscore(mat = mat, network = ppsp)
+act_scores <- run_zscore(mat = mat, network = curatedLib)
 
 act_scores[1:5, 1:5]
 ```

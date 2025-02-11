@@ -29,7 +29,6 @@ We first load the required packages to run the benchmark.
     #> The following objects are masked from 'package:base':
     #> 
     #>     intersect, setdiff, setequal, union
-
     library(tibble)
 
 ## CPTAC data
@@ -52,32 +51,38 @@ can be used for activity inference.
 ## Activity estimation
 
 Here, we will test the z-score (as implemented by RoKAI) in combination
-with the PhosphoSitePlus kinase-substrate library as in example.
+with the curated kinase-substrate library as in example.
 
 In theory any other method can also be tested with that data.
 
 ### Kinase-substrate library
 
-For that we have already processed a version of PhosphoSitePlus
-(accessed: 19/04/2023) that can be mapped to our phosphorylation site
-ids.
+For that we have already processed a version of a combination of three
+curated libraries, namely PhosphoSitePlus, PTMsigDB (excluding iKiP-DB)
+and the gold standard set of GPS 5.0, that can be mapped to our
+phosphorylation site ids.
 
-    head(phosphositeplus)
-    #> # A tibble: 6 × 8
-    #>   source  target      target_protein position   mor sequence ENSEMBL ENSEMBLPROT
-    #>   <chr>   <chr>       <chr>          <chr>    <dbl> <chr>    <chr>   <chr>      
-    #> 1 EIF2AK1 EIF2S1_S52  EIF2S1         S52          1 MILLSEL… ENSG00… <NA>       
-    #> 2 EIF2AK1 EIF2S1_S49  EIF2S1         S49          1 IEGMILL… ENSG00… <NA>       
-    #> 3 PRKCD   HDAC5_S259  HDAC5          S259         1 FPLRKTA… ENSG00… <NA>       
-    #> 4 PRKCD   PTPRA_S204  PTPRA          S204         1 PLLARSP… ENSG00… <NA>       
-    #> 5 PRKCD   BCL2_S70    BCL2           S70          1 RDPVART… ENSG00… <NA>       
-    #> 6 PRKCD   HNRNPK_S302 HNRNPK         S302         1 GRGGRGG… ENSG00… <NA>
+    head(curated)
+    #>    source      target target_protein position mor        sequence
+    #> 1 EIF2AK1  EIF2S1_S52         EIF2S1      S52   1 MILLSELSRRRIRSI
+    #> 2 EIF2AK1  EIF2S1_S49         EIF2S1      S49   1 IEGMILLSELSRRRI
+    #> 3   PRKCD  HDAC5_S259          HDAC5     S259   1 FPLRKTASEPNLKVR
+    #> 4   PRKCD  PTPRA_S204          PTPRA     S204   1 PLLARSPSTNRKYPP
+    #> 5   PRKCD    BCL2_S70           BCL2      S70   1 RDPVARTSPLQTPAA
+    #> 6   PRKCD HNRNPK_S302         HNRNPK     S302   1 GRGGRGGSRARNLPL
+    #>           ENSEMBL
+    #> 1 ENSG00000134001
+    #> 2 ENSG00000134001
+    #> 3 ENSG00000108840
+    #> 4 ENSG00000132670
+    #> 5 ENSG00000171791
+    #> 6 ENSG00000165119
 
 For the tumor-based benchmark we remove auto-phosphorylation sites from
 the library to avoid data leakage from the gold standard sets used in
 this benchmark.
 
-    phosphositeplus_filt <- phosphositeplus %>%
+    curated_filt <- curated %>%
       dplyr::filter(source != target_protein)
 
 After mapping the phosphorylation sites we can bring it into the right
@@ -89,7 +94,7 @@ format to run the run\_zscore function.
       dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 1)) %>%
       dplyr::mutate(ENSEMBL = purrr::map_chr(stringr::str_split(ENSEMBL, "\\."), 1))  %>%
       dplyr::mutate(sequence = purrr::map_chr(stringr::str_split(pps_id, "\\|"), 4))
-    mapped_phosphositeplus <- phosphositeplus_filt %>%
+    mapped_curated <- curated_filt %>%
       dplyr::left_join(map_pps, by = c("ENSEMBL", "sequence"), relationship = "many-to-many") %>%
       dplyr::mutate(target = pps_id) %>%
       dplyr::filter(!is.na(pps_id)) %>%
@@ -102,7 +107,7 @@ The z-score calculates a score for each kinase by aggregating the change
 in abundance of the direct targets in relation to changes in the
 non-targets.
 
-    act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_phosphositeplus)))
+    act_scores <- purrr::map(cptac_list, ~list(zscore_ppsp = run_zscore(mat = .x, network = mapped_curated)))
 
 ## Tumor-based benchmark
 
@@ -316,4 +321,4 @@ and can compare this with other methods or prior knowledge resources.
 
     auroc_p
 
-![](/private/var/folders/th/nbdnn8l96tx88tt8nm212dpw0000gn/T/RtmpxTFSpm/preview-9e36397090de.dir/tumorBench_files/figure-markdown_strict/plot-1.png)
+![](/private/var/folders/th/nbdnn8l96tx88tt8nm212dpw0000gn/T/RtmpFl3WvE/preview-3e9d264b7df2.dir/tumorBench_files/figure-markdown_strict/plot-1.png)
