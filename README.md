@@ -8,6 +8,9 @@ benchmarKIN provides two complementary benchmarking approaches to evaluate
 kinase activity inference tools. This has already been applied to a number
 of computational algorithms and prior knowledge resources [here](https://github.com/saezlab/kinase_benchmark).
 
+If you are interested in the benchmark data or any of the prior knowledge resources used
+check out our [Zenodo repository](https://zenodo.org/records/14824013).
+
 To run the benchmarking approaches yourself please check out the [documentation](https://benchmarkin.readthedocs.io/en/latest/#).
 
 ## Installation
